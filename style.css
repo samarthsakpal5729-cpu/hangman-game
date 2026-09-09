@@ -1,0 +1,394 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    color: white;
+
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 10, 20, 0.80)),
+        url("assets/background1.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.container {
+    min-height: 100vh;
+    padding: 25px;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.screen {
+    display: none;
+    min-height: 90vh;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.screen.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Common Box Design */
+
+.box,
+.welcome-box,
+.complete-box,
+.game-card {
+    background: rgba(5, 10, 18, 0.90);
+    border: 1px solid #55d9ff;
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0, 190, 255, 0.45);
+}
+
+.box {
+    width: min(700px, 95%);
+    padding: 35px;
+    text-align: center;
+}
+
+.welcome-box {
+    width: min(750px, 95%);
+    padding: 35px;
+    text-align: center;
+}
+
+.complete-box {
+    width: min(650px, 95%);
+    padding: 30px;
+    text-align: center;
+}
+
+/* Welcome Page */
+
+.logo-image {
+    width: min(100%, 450px);
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: clamp(35px, 6vw, 65px);
+    color: #ff694f;
+    text-shadow: 0 0 15px #ff3212;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: clamp(28px, 5vw, 45px);
+    color: #ffcf4d;
+    margin-bottom: 15px;
+}
+
+.welcome-box p {
+    color: #c4d9e8;
+    margin-bottom: 25px;
+    font-size: 18px;
+}
+
+/* Buttons */
+
+button {
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    color: white;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.15);
+}
+
+.main-button {
+    padding: 14px 25px;
+    margin: 8px;
+    background: linear-gradient(135deg, #ff4a2d, #8d1cb6);
+    box-shadow: 0 0 15px #ff4a2d;
+}
+
+.small-button {
+    padding: 11px 18px;
+    margin: 8px;
+    background: #26394b;
+}
+
+/* Device and Mode Page */
+
+.button-group,
+.mode-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 25px 0;
+}
+
+.device-button {
+    width: 180px;
+    padding: 25px;
+    font-size: 20px;
+    background: #152a3c;
+    border: 1px solid #55d9ff;
+}
+
+.mode-button {
+    width: 190px;
+    min-height: 135px;
+    padding: 18px;
+    text-align: left;
+}
+
+.mode-button b,
+.mode-button span {
+    display: block;
+}
+
+.mode-button span {
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: normal;
+}
+
+.peaceful {
+    background: #18796d;
+}
+
+.easy {
+    background: #315dbc;
+}
+
+.hard {
+    background: #a12648;
+}
+
+/* Game Page */
+
+.game-content {
+    width: min(1100px, 100%);
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+#modeName {
+    color: #55d9ff;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+#levelText {
+    color: white;
+    margin: 3px 0;
+}
+
+.stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.stats span,
+.sound-button {
+    padding: 10px;
+    background: #10283b;
+    border: 1px solid #407b9c;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    height: 12px;
+    margin: 20px 0;
+    background: #10283b;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#progress {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #45dcff, #ff512f);
+    transition: width 0.4s;
+}
+
+.game-area {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 20px;
+}
+
+.game-card {
+    padding: 25px;
+}
+
+#hangmanCanvas {
+    display: block;
+    width: min(100%, 260px);
+    margin: auto;
+    background: #020913;
+    border-radius: 15px;
+}
+
+.message {
+    min-height: 40px;
+    margin-top: 15px;
+    text-align: center;
+    color: #69f4bd;
+    font-weight: bold;
+}
+
+.wrong-text {
+    text-align: center;
+    color: #c4d9e8;
+}
+
+.category {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #4b2b92;
+    color: #f0dcff;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.question-card h3 {
+    margin: 20px 0;
+    font-size: clamp(20px, 3vw, 28px);
+    line-height: 1.4;
+}
+
+.answer-display {
+    min-height: 55px;
+    margin: 25px 0;
+    color: #55d9ff;
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 7px;
+    word-break: break-word;
+}
+
+.input-area {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+#guessInput {
+    flex: 1;
+    min-width: 0;
+    padding: 14px;
+    border: 2px solid #407b9c;
+    border-radius: 12px;
+    outline: none;
+    background: #020913;
+    color: white;
+    font-size: 17px;
+    text-transform: uppercase;
+}
+
+#guessInput:focus {
+    border-color: #55d9ff;
+    box-shadow: 0 0 12px #55d9ff;
+}
+
+.hint {
+    min-height: 20px;
+    margin-top: 15px;
+    color: #ffdc64;
+}
+
+/* Complete Page */
+
+.complete-image {
+    width: min(100%, 300px);
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+/* Instructions Page */
+
+.instructions {
+    text-align: left;
+}
+
+.instructions h2 {
+    text-align: center;
+}
+
+.instructions p {
+    margin: 12px 0;
+    color: #d0dff0;
+}
+
+/* Mobile Screen */
+
+@media (max-width: 700px) {
+
+    body {
+        background-image:
+            linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 10, 20, 0.82)),
+            url("assets/background2.jpg");
+    }
+
+    .container {
+        padding: 12px;
+    }
+
+    .game-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .game-area {
+        grid-template-columns: 1fr;
+    }
+
+    .input-area {
+        flex-direction: column;
+    }
+
+    .input-area button {
+        width: 100%;
+    }
+
+    .answer-display {
+        letter-spacing: 4px;
+    }
+
+    .box,
+    .welcome-box,
+    .complete-box,
+    .game-card {
+        padding: 20px;
+    }
+}

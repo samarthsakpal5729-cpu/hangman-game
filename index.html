@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hangman Game</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <!-- Welcome Screen -->
+        <section id="welcomeScreen" class="screen active">
+
+            <div class="welcome-box">
+
+                <img
+                    src="assets/design.jpg"
+                    alt="Hangman Game"
+                    class="logo-image"
+                >
+
+                <h1>HANGMAN GAME</h1>
+
+                <p>
+                    Learn OOP concepts while playing Hangman.
+                </p>
+
+                <button id="startButton" class="main-button">
+                    START GAME
+                </button>
+
+                <button id="howToPlayButton" class="small-button">
+                    HOW TO PLAY
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- Device Screen -->
+        <section id="deviceScreen" class="screen">
+
+            <div class="box">
+
+                <h2>Select Your Device</h2>
+
+                <p>Choose the device you are using.</p>
+
+                <div class="button-group">
+
+                    <button id="laptopButton" class="device-button">
+                        💻 Laptop
+                    </button>
+
+                    <button id="mobileButton" class="device-button">
+                        📱 Mobile
+                    </button>
+
+                </div>
+
+                <button id="deviceBackButton" class="small-button">
+                    BACK
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- Mode Screen -->
+        <section id="modeScreen" class="screen">
+
+            <div class="box">
+
+                <h2>Select Game Mode</h2>
+
+                <p>Every level has five OOP questions.</p>
+
+                <div class="mode-group">
+
+                    <button id="peacefulButton" class="mode-button peaceful">
+                        <b>Peaceful Mode</b>
+                        <span>No lives are lost. Practice freely.</span>
+                    </button>
+
+                    <button id="easyButton" class="mode-button easy">
+                        <b>Easy Mode</b>
+                        <span>Six lives and simple questions.</span>
+                    </button>
+
+                    <button id="hardButton" class="mode-button hard">
+                        <b>Hard Mode</b>
+                        <span>Four lives and harder questions.</span>
+                    </button>
+
+                </div>
+
+                <button id="modeBackButton" class="small-button">
+                    BACK
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- Game Screen -->
+        <section id="gameScreen" class="screen">
+
+            <div class="game-content">
+
+                <header class="game-header">
+
+                    <div>
+                        <p id="modeName">EASY MODE</p>
+                        <h2 id="levelText">Level 1</h2>
+                    </div>
+
+                    <div class="stats">
+
+                        <span>
+                            Question: <b id="questionNumber">1/5</b>
+                        </span>
+
+                        <span>
+                            ❤️ Lives: <b id="lives">6</b>
+                        </span>
+
+                        <span>
+                            ⭐ Score: <b id="score">0</b>
+                        </span>
+
+                        <button id="soundButton" class="sound-button">
+                            🔊
+                        </button>
+
+                    </div>
+
+                </header>
+
+                <div class="progress-bar">
+                    <div id="progress"></div>
+                </div>
+
+                <div class="game-area">
+
+                    <!-- Hangman -->
+                    <div class="game-card">
+
+                        <canvas
+                            id="hangmanCanvas"
+                            width="260"
+                            height="260"
+                        ></canvas>
+
+                        <p id="message" class="message">
+                            Type one letter or the complete answer.
+                        </p>
+
+                        <p class="wrong-text">
+                            Wrong: <span id="wrongLetters">None</span>
+                        </p>
+
+                    </div>
+
+
+                    <!-- Question -->
+                    <div class="game-card question-card">
+
+                        <span id="category" class="category">
+                            OOP
+                        </span>
+
+                        <h3 id="question">
+                            Loading question...
+                        </h3>
+
+                        <div id="answerDisplay" class="answer-display">
+                            _ _ _ _ _
+                        </div>
+
+                        <label for="guessInput">
+                            Enter one letter or complete answer:
+                        </label>
+
+                        <div class="input-area">
+
+                            <input
+                                type="text"
+                                id="guessInput"
+                                placeholder="Type here"
+                                autocomplete="off"
+                            >
+
+                            <button id="guessButton" class="main-button">
+                                GUESS
+                            </button>
+
+                        </div>
+
+                        <p id="hint" class="hint"></p>
+
+                        <button id="menuButton" class="small-button">
+                            SAVE AND RETURN TO MENU
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Level Complete Screen -->
+        <section id="completeScreen" class="screen">
+
+            <div class="complete-box">
+
+                <img
+                    src="assets/game-complete.jpg"
+                    alt="Level Complete"
+                    class="complete-image"
+                >
+
+                <h2 id="completeTitle">Level Complete!</h2>
+
+                <p id="completeMessage">
+                    Next level is unlocked.
+                </p>
+
+                <button id="nextLevelButton" class="main-button">
+                    NEXT LEVEL
+                </button>
+
+                <button id="completeMenuButton" class="small-button">
+                    MAIN MENU
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- Instructions Screen -->
+        <section id="instructionScreen" class="screen">
+
+            <div class="box instructions">
+
+                <h2>How To Play</h2>
+
+                <p>1. First select Laptop or Mobile.</p>
+                <p>2. Select Peaceful, Easy, or Hard mode.</p>
+                <p>3. Level 1 starts automatically.</p>
+                <p>4. Every level contains five questions.</p>
+                <p>5. Type one letter or type the complete answer.</p>
+                <p>6. Completing a level unlocks the next level.</p>
+                <p>7. Your unlocked level is saved automatically.</p>
+
+                <button id="instructionBackButton" class="main-button">
+                    GOT IT
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
