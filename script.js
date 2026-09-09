@@ -2,20 +2,30 @@
    HANGMAN GAME - COMPLETE script.js
    OOP QUESTION GAME
    Created for Samarth Sakpal
+
+   FEATURES
+   - 100 Peaceful Questions
+   - 100 Easy Questions
+   - 100 Hard Questions
+   - 20 Levels × 5 Questions
+   - Player-wise Progress
+   - Device Selection
+   - Sound Effects
+   - Background Music
+   - Level Completion Sound
+   - Hangman Canvas
+   - Startup Logo Animation
    ========================================================= */
 
 
 /* =========================================================
    MODE BASED QUESTION BANK
-   100 QUESTIONS EACH
-   20 LEVELS × 5 QUESTIONS
-   ========================================================= */
+========================================================= */
 
 
 /* =========================================================
    🟢 PEACEFUL MODE
-   Very Basic / Practice
-   ========================================================= */
+========================================================= */
 
 const peacefulQuestions = [
 
@@ -153,7 +163,7 @@ const peacefulQuestions = [
 
     ["Which constructor takes no arguments?", "DEFAULT", "C++"],
     ["Which function can access private data as a special privilege?", "FRIEND", "C++"],
-    ["Which pattern restricts a class to one instance?", "SINGLETON", "OOP"],
+    ["Which pattern restricts a class to one instance?", "SINGLETON", "C++"],
     ["Which keyword supports runtime dispatch?", "VIRTUAL", "C++"],
     ["Which keyword can stop further overriding?", "FINAL", "C++"]
 
@@ -162,8 +172,7 @@ const peacefulQuestions = [
 
 /* =========================================================
    🟡 EASY MODE
-   BASIC + MODERATE
-   ========================================================= */
+========================================================= */
 
 const easyQuestions = [
 
@@ -322,8 +331,7 @@ const easyQuestions = [
 
 /* =========================================================
    🔴 HARD MODE
-   ADVANCED / TRICKY
-   ========================================================= */
+========================================================= */
 
 const hardQuestions = [
 
@@ -493,12 +501,6 @@ const hardQuestions = [
 
 
 /* =========================================================
-   HANGMAN GAME
-   PLAYER-WISE PROGRESS SYSTEM
-   ========================================================= */
-
-
-/* =========================================================
    GAME VARIABLES
 ========================================================= */
 
@@ -521,6 +523,193 @@ let levelWasCompleted = false;
 
 
 /* =========================================================
+   🔊 SOUND SYSTEM
+========================================================= */
+
+const backgroundMusic = new Audio(
+    "./assets/simplesound-horror-trailer-443327.mp3"
+);
+
+const correctSound = new Audio(
+    "./assets/answer-correct.mp3"
+);
+
+const wrongSound = new Audio(
+    "./assets/answer-wrong.mp3"
+);
+
+const levelCompleteSound = new Audio(
+    "./assets/faaah.mp3"
+);
+
+
+/* Background music settings */
+
+backgroundMusic.loop = true;
+backgroundMusic.volume = 0.18;
+
+
+/* Sound effect volume */
+
+correctSound.volume = 0.80;
+wrongSound.volume = 0.80;
+levelCompleteSound.volume = 0.90;
+
+
+/* Preload audio */
+
+backgroundMusic.preload = "auto";
+correctSound.preload = "auto";
+wrongSound.preload = "auto";
+levelCompleteSound.preload = "auto";
+
+
+/* =========================================================
+   PLAY SOUND
+========================================================= */
+
+function playSound(type) {
+
+    if (!soundOn) {
+        return;
+    }
+
+    let sound = null;
+
+
+    if (type === "correct") {
+
+        sound = correctSound;
+
+    }
+    else if (type === "wrong") {
+
+        sound = wrongSound;
+
+    }
+    else if (
+        type === "level" ||
+        type === "win" ||
+        type === "complete"
+    ) {
+
+        sound = levelCompleteSound;
+
+    }
+
+
+    if (!sound) {
+        return;
+    }
+
+
+    sound.currentTime = 0;
+
+
+    sound.play().catch(function(error) {
+
+        console.log(
+            "Sound could not play:",
+            error
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   START BACKGROUND MUSIC
+========================================================= */
+
+function startBackgroundMusic() {
+
+    if (!soundOn) {
+        return;
+    }
+
+
+    /*
+     * Don't restart music if already playing.
+     */
+
+    if (!backgroundMusic.paused) {
+        return;
+    }
+
+
+    backgroundMusic.play().catch(function(error) {
+
+        console.log(
+            "Background music waiting for user interaction:",
+            error
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   STOP BACKGROUND MUSIC
+========================================================= */
+
+function stopBackgroundMusic() {
+
+    backgroundMusic.pause();
+
+}
+
+
+/* =========================================================
+   SOUND TOGGLE
+========================================================= */
+
+function toggleSound() {
+
+    soundOn = !soundOn;
+
+
+    const button =
+        document.getElementById(
+            "soundButton"
+        );
+
+
+    if (soundOn) {
+
+        if (button) {
+
+            button.textContent = "🔊";
+
+        }
+
+
+        startBackgroundMusic();
+
+    }
+    else {
+
+        if (button) {
+
+            button.textContent = "🔇";
+
+        }
+
+
+        stopBackgroundMusic();
+
+
+        correctSound.pause();
+        wrongSound.pause();
+        levelCompleteSound.pause();
+
+    }
+
+}
+
+
+/* =========================================================
    PLAYER SYSTEM
 ========================================================= */
 
@@ -528,32 +717,49 @@ let currentPlayerName = "";
 let currentPlayerKey = "";
 
 
-/* Clean player name */
+/* =========================================================
+   NORMALIZE PLAYER NAME
+========================================================= */
+
 function normalizePlayerName(name) {
 
     return name
         .trim()
         .replace(/\s+/g, " ")
         .slice(0, 30);
+
 }
 
 
-/* Create unique localStorage key from player name */
+/* =========================================================
+   CREATE PLAYER KEY
+========================================================= */
+
 function createPlayerKey(name) {
 
     return normalizePlayerName(name)
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "_")
         .replace(/^_+|_+$/g, "") || "player";
+
 }
 
 
-/* Player + Mode specific progress key */
+/* =========================================================
+   PLAYER PROGRESS KEY
+========================================================= */
+
 function getProgressKey() {
 
-    if (!currentPlayerKey || !selectedMode) {
+    if (
+        !currentPlayerKey ||
+        !selectedMode
+    ) {
+
         return "";
+
     }
+
 
     return (
         "hangman_player_" +
@@ -562,6 +768,7 @@ function getProgressKey() {
         selectedMode +
         "_level"
     );
+
 }
 
 
@@ -629,9 +836,11 @@ const playerScreenHTML = `
 `;
 
 
-/* Insert Player Screen */
+/* Insert player screen */
+
 const mainContainer =
     document.querySelector(".container");
+
 
 if (mainContainer) {
 
@@ -639,131 +848,138 @@ if (mainContainer) {
         "beforeend",
         playerScreenHTML
     );
+
 }
 
 
 /* =========================================================
-   PLAYER SCREEN STYLE
+   PLAYER STYLE
 ========================================================= */
 
 const playerStyle =
     document.createElement("style");
 
+
 playerStyle.textContent = `
 
-    .player-box {
-        width: min(650px, 95%);
-        padding: 35px;
-        text-align: center;
-    }
+.player-box {
+    width: min(650px, 95%);
+    padding: 35px;
+    text-align: center;
+}
 
-    .player-input-wrapper {
-        width: min(450px, 100%);
-        margin: 20px auto;
+.player-input-wrapper {
+    width: min(450px, 100%);
+    margin: 20px auto;
+}
+
+#playerNameInput {
+
+    width: 100%;
+
+    padding: 16px 18px;
+
+    border-radius: 12px;
+
+    border: 2px solid
+        rgba(255, 65, 35, 0.40);
+
+    outline: none;
+
+    background:
+        rgba(5, 0, 0, 0.82);
+
+    color: white;
+
+    font-size: 18px;
+
+    text-align: center;
+
+    transition: 0.25s ease;
+
+    box-shadow:
+        inset 0 0 15px
+        rgba(255, 30, 0, 0.04);
+
+}
+
+#playerNameInput::placeholder {
+    color:
+        rgba(255, 210, 200, 0.45);
+}
+
+#playerNameInput:focus {
+
+    border-color:
+        #ff4b2c;
+
+    box-shadow:
+        0 0 15px
+        rgba(255, 45, 15, 0.45);
+
+}
+
+.player-message {
+
+    min-height: 25px;
+
+    margin-top: 5px;
+
+    color: #ff8065;
+
+    font-weight: bold;
+
+}
+
+.current-player {
+
+    display: inline-block;
+
+    margin: 10px 0 5px;
+
+    padding: 8px 16px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(120, 0, 0, 0.35);
+
+    border:
+        1px solid
+        rgba(255, 70, 40, 0.40);
+
+    color:
+        #ff9c87;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 0 12px
+        rgba(255, 30, 0, 0.12);
+
+}
+
+.change-player-button {
+    margin-top: 5px;
+}
+
+@media (max-width: 700px) {
+
+    .player-box {
+        padding: 22px;
     }
 
     #playerNameInput {
-
-        width: 100%;
-
-        padding: 16px 18px;
-
-        border-radius: 12px;
-
-        border: 2px solid
-            rgba(255, 65, 35, 0.40);
-
-        outline: none;
-
-        background:
-            rgba(5, 0, 0, 0.82);
-
-        color: white;
-
-        font-size: 18px;
-
-        text-align: center;
-
-        transition: 0.25s ease;
-
-        box-shadow:
-            inset 0 0 15px
-            rgba(255, 30, 0, 0.04);
+        font-size: 16px;
     }
 
-    #playerNameInput::placeholder {
-        color:
-            rgba(255, 210, 200, 0.45);
-    }
-
-    #playerNameInput:focus {
-
-        border-color:
-            #ff4b2c;
-
-        box-shadow:
-            0 0 15px
-            rgba(255, 45, 15, 0.45);
-    }
-
-    .player-message {
-
-        min-height: 25px;
-
-        margin-top: 5px;
-
-        color: #ff8065;
-
-        font-weight: bold;
-    }
-
-    .current-player {
-
-        display: inline-block;
-
-        margin: 10px 0 5px;
-
-        padding: 8px 16px;
-
-        border-radius: 20px;
-
-        background:
-            rgba(120, 0, 0, 0.35);
-
-        border:
-            1px solid
-            rgba(255, 70, 40, 0.40);
-
-        color:
-            #ff9c87;
-
-        font-weight: bold;
-
-        box-shadow:
-            0 0 12px
-            rgba(255, 30, 0, 0.12);
-    }
-
-    .change-player-button {
-
-        margin-top: 5px;
-    }
-
-    @media (max-width: 700px) {
-
-        .player-box {
-            padding: 22px;
-        }
-
-        #playerNameInput {
-            font-size: 16px;
-        }
-
-    }
+}
 
 `;
 
-document.head.appendChild(playerStyle);
+document.head.appendChild(
+    playerStyle
+);
 
 
 /* =========================================================
@@ -775,38 +991,48 @@ function showScreen(screenId) {
     const screens =
         document.querySelectorAll(".screen");
 
+
     screens.forEach(function(screen) {
 
         screen.classList.remove("active");
 
     });
 
+
     const target =
         document.getElementById(screenId);
+
 
     if (target) {
 
         target.classList.add("active");
 
     }
+
 }
 
 
 /* =========================================================
-   PLAYER FUNCTIONS
+   PLAYER SCREEN
 ========================================================= */
 
 function showPlayerScreen() {
 
     const input =
-        document.getElementById("playerNameInput");
+        document.getElementById(
+            "playerNameInput"
+        );
 
     const message =
-        document.getElementById("playerNameMessage");
+        document.getElementById(
+            "playerNameMessage"
+        );
+
 
     if (input) {
 
         input.value = "";
+
 
         setTimeout(function() {
 
@@ -816,31 +1042,48 @@ function showPlayerScreen() {
 
     }
 
+
     if (message) {
 
         message.textContent = "";
 
     }
 
-    showScreen("playerScreen");
+
+    showScreen(
+        "playerScreen"
+    );
+
 }
 
 
-/* Select player */
+/* =========================================================
+   SELECT PLAYER
+========================================================= */
+
 function selectPlayer() {
 
     const input =
-        document.getElementById("playerNameInput");
+        document.getElementById(
+            "playerNameInput"
+        );
 
     const message =
-        document.getElementById("playerNameMessage");
+        document.getElementById(
+            "playerNameMessage"
+        );
+
 
     if (!input) {
         return;
     }
 
+
     const name =
-        normalizePlayerName(input.value);
+        normalizePlayerName(
+            input.value
+        );
+
 
     if (name.length < 2) {
 
@@ -851,26 +1094,26 @@ function selectPlayer() {
 
         }
 
+
         input.focus();
 
         return;
+
     }
+
 
     currentPlayerName = name;
 
     currentPlayerKey =
         createPlayerKey(name);
 
-    /*
-       Reset current session.
-       Saved progress is NOT deleted.
-    */
 
     selectedMode = "";
     selectedDevice = "";
 
     currentLevel = 1;
     currentQuestion = 0;
+
     score = 0;
     lives = 6;
 
@@ -880,22 +1123,32 @@ function selectPlayer() {
     gameLocked = false;
     levelWasCompleted = false;
 
+
     if (message) {
 
         message.textContent =
-            "✅ Welcome, " + currentPlayerName + "!";
+            "✅ Welcome, " +
+            currentPlayerName +
+            "!";
 
     }
 
+
     setTimeout(function() {
 
-        showScreen("deviceScreen");
+        showScreen(
+            "deviceScreen"
+        );
 
     }, 350);
+
 }
 
 
-/* Change player */
+/* =========================================================
+   CHANGE PLAYER
+========================================================= */
+
 function changePlayer() {
 
     currentPlayerName = "";
@@ -906,6 +1159,7 @@ function changePlayer() {
 
     currentLevel = 1;
     currentQuestion = 0;
+
     score = 0;
     lives = 6;
 
@@ -915,10 +1169,18 @@ function changePlayer() {
     gameLocked = false;
     levelWasCompleted = false;
 
-    document.body.classList.remove("mobile-view");
-    document.body.classList.remove("laptop-view");
+
+    document.body.classList.remove(
+        "mobile-view"
+    );
+
+    document.body.classList.remove(
+        "laptop-view"
+    );
+
 
     showPlayerScreen();
+
 }
 
 
@@ -930,40 +1192,61 @@ function changeDeviceLayout(device) {
 
     selectedDevice = device;
 
-    document.body.classList.remove("mobile-view");
-    document.body.classList.remove("laptop-view");
+
+    document.body.classList.remove(
+        "mobile-view"
+    );
+
+    document.body.classList.remove(
+        "laptop-view"
+    );
+
 
     if (device === "mobile") {
 
-        document.body.classList.add("mobile-view");
+        document.body.classList.add(
+            "mobile-view"
+        );
 
     }
+
 
     if (device === "laptop") {
 
-        document.body.classList.add("laptop-view");
+        document.body.classList.add(
+            "laptop-view"
+        );
 
     }
+
 }
 
 
 /* =========================================================
-   PLAYER-SPECIFIC SAVED LEVEL
+   GET SAVED LEVEL
 ========================================================= */
 
 function getSavedLevel() {
 
-    if (!currentPlayerKey || !selectedMode) {
+    if (
+        !currentPlayerKey ||
+        !selectedMode
+    ) {
 
         return 1;
 
     }
 
+
     const storageKey =
         getProgressKey();
 
+
     const savedLevel =
-        localStorage.getItem(storageKey);
+        localStorage.getItem(
+            storageKey
+        );
+
 
     if (savedLevel === null) {
 
@@ -971,8 +1254,10 @@ function getSavedLevel() {
 
     }
 
+
     const level =
         Number(savedLevel);
+
 
     if (level < 1) {
 
@@ -980,30 +1265,42 @@ function getSavedLevel() {
 
     }
 
+
     if (level > 20) {
 
         return 20;
 
     }
 
+
     return level;
+
 }
 
 
-/* Save level */
+/* =========================================================
+   SAVE UNLOCKED LEVEL
+========================================================= */
+
 function saveUnlockedLevel(level) {
 
-    if (!currentPlayerKey || !selectedMode) {
+    if (
+        !currentPlayerKey ||
+        !selectedMode
+    ) {
 
         return;
 
     }
 
+
     const storageKey =
         getProgressKey();
 
+
     const oldLevel =
         getSavedLevel();
+
 
     if (level > oldLevel) {
 
@@ -1013,48 +1310,45 @@ function saveUnlockedLevel(level) {
         );
 
     }
+
 }
 
 
 /* =========================================================
-   QUESTIONS
-   Uses your existing question banks
+   QUESTION BANK
 ========================================================= */
 
 function getQuestionBank() {
 
-    if (typeof peacefulQuestions !== "undefined" &&
-        selectedMode === "peaceful") {
+    if (
+        selectedMode === "peaceful"
+    ) {
 
         return peacefulQuestions;
 
     }
 
-    if (typeof easyQuestions !== "undefined" &&
-        selectedMode === "easy") {
+
+    if (
+        selectedMode === "easy"
+    ) {
 
         return easyQuestions;
 
     }
 
-    if (typeof hardQuestions !== "undefined" &&
-        selectedMode === "hard") {
+
+    if (
+        selectedMode === "hard"
+    ) {
 
         return hardQuestions;
 
     }
 
-    /*
-       Compatibility with older version
-    */
-
-    if (typeof questions !== "undefined") {
-
-        return questions;
-
-    }
 
     return [];
+
 }
 
 
@@ -1067,19 +1361,23 @@ function getLevelQuestions() {
     const questionBank =
         getQuestionBank();
 
+
     if (!questionBank.length) {
 
         return [];
 
     }
 
+
     const startIndex =
         (currentLevel - 1) * 5;
+
 
     return questionBank.slice(
         startIndex,
         startIndex + 5
     );
+
 }
 
 
@@ -1089,8 +1387,10 @@ function getLevelQuestions() {
 
 function startGame(mode) {
 
-    if (!currentPlayerName ||
-        !currentPlayerKey) {
+    if (
+        !currentPlayerName ||
+        !currentPlayerKey
+    ) {
 
         showPlayerScreen();
 
@@ -1098,12 +1398,15 @@ function startGame(mode) {
 
     }
 
+
     selectedMode = mode;
 
     levelWasCompleted = false;
 
+
     currentLevel =
         getSavedLevel();
+
 
     currentQuestion = 0;
 
@@ -1111,25 +1414,39 @@ function startGame(mode) {
 
     gameLocked = false;
 
-    if (selectedMode === "peaceful") {
+
+    if (
+        selectedMode === "peaceful"
+    ) {
 
         lives = 100;
 
-    } else if (selectedMode === "easy") {
+    }
+    else if (
+        selectedMode === "easy"
+    ) {
 
         lives = 6;
 
-    } else {
+    }
+    else {
 
         lives = 4;
 
     }
 
+
     const modeName =
-        document.getElementById("modeName");
+        document.getElementById(
+            "modeName"
+        );
+
 
     const levelText =
-        document.getElementById("levelText");
+        document.getElementById(
+            "levelText"
+        );
+
 
     if (modeName) {
 
@@ -1138,6 +1455,7 @@ function startGame(mode) {
             " MODE";
 
     }
+
 
     if (levelText) {
 
@@ -1148,9 +1466,14 @@ function startGame(mode) {
 
     }
 
-    showScreen("levelProgressScreen");
+
+    showScreen(
+        "levelProgressScreen"
+    );
+
 
     showLevelProgress();
+
 }
 
 
@@ -1163,14 +1486,19 @@ function playSelectedLevel(levelNumber) {
     const savedLevel =
         getSavedLevel();
 
-    if (levelNumber > savedLevel) {
+
+    if (
+        levelNumber > savedLevel
+    ) {
 
         return;
 
     }
 
+
     currentLevel =
         levelNumber;
+
 
     currentQuestion = 0;
 
@@ -1178,25 +1506,39 @@ function playSelectedLevel(levelNumber) {
 
     gameLocked = false;
 
-    if (selectedMode === "peaceful") {
+
+    if (
+        selectedMode === "peaceful"
+    ) {
 
         lives = 100;
 
-    } else if (selectedMode === "easy") {
+    }
+    else if (
+        selectedMode === "easy"
+    ) {
 
         lives = 6;
 
-    } else {
+    }
+    else {
 
         lives = 4;
 
     }
 
+
     const modeName =
-        document.getElementById("modeName");
+        document.getElementById(
+            "modeName"
+        );
+
 
     const levelText =
-        document.getElementById("levelText");
+        document.getElementById(
+            "levelText"
+        );
+
 
     if (modeName) {
 
@@ -1205,6 +1547,7 @@ function playSelectedLevel(levelNumber) {
             " MODE";
 
     }
+
 
     if (levelText) {
 
@@ -1215,9 +1558,14 @@ function playSelectedLevel(levelNumber) {
 
     }
 
-    showScreen("gameScreen");
+
+    showScreen(
+        "gameScreen"
+    );
+
 
     loadQuestion();
+
 }
 
 
@@ -1230,28 +1578,43 @@ function loadQuestion() {
     const levelQuestions =
         getLevelQuestions();
 
+
     const questionData =
         levelQuestions[currentQuestion];
 
+
     if (!questionData) {
 
-        document.getElementById("message").textContent =
-            "No question available for this level.";
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        if (message) {
+
+            message.textContent =
+                "No question available for this level.";
+
+        }
+
 
         return;
 
     }
 
+
     hiddenAnswer = "";
 
     wrongLetters = [];
-
     guessedLetters = [];
 
     gameLocked = false;
 
+
     const correctAnswer =
         questionData[1].toUpperCase();
+
 
     for (
         let i = 0;
@@ -1259,11 +1622,14 @@ function loadQuestion() {
         i++
     ) {
 
-        if (correctAnswer[i] === " ") {
+        if (
+            correctAnswer[i] === " "
+        ) {
 
             hiddenAnswer += " ";
 
-        } else {
+        }
+        else {
 
             hiddenAnswer += "_";
 
@@ -1271,23 +1637,42 @@ function loadQuestion() {
 
     }
 
+
     const question =
-        document.getElementById("question");
+        document.getElementById(
+            "question"
+        );
+
 
     const category =
-        document.getElementById("category");
+        document.getElementById(
+            "category"
+        );
+
 
     const questionNumber =
-        document.getElementById("questionNumber");
+        document.getElementById(
+            "questionNumber"
+        );
+
 
     const input =
-        document.getElementById("guessInput");
+        document.getElementById(
+            "guessInput"
+        );
+
 
     const message =
-        document.getElementById("message");
+        document.getElementById(
+            "message"
+        );
+
 
     const hint =
-        document.getElementById("hint");
+        document.getElementById(
+            "hint"
+        );
+
 
     if (question) {
 
@@ -1296,12 +1681,14 @@ function loadQuestion() {
 
     }
 
+
     if (category) {
 
         category.textContent =
             questionData[2];
 
     }
+
 
     if (questionNumber) {
 
@@ -1311,11 +1698,13 @@ function loadQuestion() {
 
     }
 
+
     if (input) {
 
         input.value = "";
 
     }
+
 
     if (message) {
 
@@ -1327,14 +1716,18 @@ function loadQuestion() {
 
     }
 
+
     if (hint) {
 
-        if (selectedMode === "hard") {
+        if (
+            selectedMode === "hard"
+        ) {
 
             hint.textContent =
                 "Hint is disabled in Hard Mode.";
 
-        } else {
+        }
+        else {
 
             hint.textContent =
                 "Hint: Answer contains " +
@@ -1345,7 +1738,9 @@ function loadQuestion() {
 
     }
 
+
     updateGameScreen();
+
 
     if (input) {
 
@@ -1356,6 +1751,7 @@ function loadQuestion() {
         }, 100);
 
     }
+
 }
 
 
@@ -1367,6 +1763,7 @@ function updateGameScreen() {
 
     let displayAnswer = "";
 
+
     for (
         let i = 0;
         i < hiddenAnswer.length;
@@ -1374,24 +1771,41 @@ function updateGameScreen() {
     ) {
 
         displayAnswer +=
-            hiddenAnswer[i] + " ";
+            hiddenAnswer[i] +
+            " ";
 
     }
 
+
     const answerDisplay =
-        document.getElementById("answerDisplay");
+        document.getElementById(
+            "answerDisplay"
+        );
+
 
     const wrongLettersElement =
-        document.getElementById("wrongLetters");
+        document.getElementById(
+            "wrongLetters"
+        );
+
 
     const livesElement =
-        document.getElementById("lives");
+        document.getElementById(
+            "lives"
+        );
+
 
     const scoreElement =
-        document.getElementById("score");
+        document.getElementById(
+            "score"
+        );
+
 
     const progressElement =
-        document.getElementById("progress");
+        document.getElementById(
+            "progress"
+        );
+
 
     if (answerDisplay) {
 
@@ -1399,6 +1813,7 @@ function updateGameScreen() {
             displayAnswer;
 
     }
+
 
     if (wrongLettersElement) {
 
@@ -1409,6 +1824,7 @@ function updateGameScreen() {
 
     }
 
+
     if (livesElement) {
 
         livesElement.textContent =
@@ -1418,12 +1834,14 @@ function updateGameScreen() {
 
     }
 
+
     if (scoreElement) {
 
         scoreElement.textContent =
             score;
 
     }
+
 
     if (progressElement) {
 
@@ -1433,7 +1851,9 @@ function updateGameScreen() {
 
     }
 
+
     drawHangman();
+
 }
 
 
@@ -1449,8 +1869,12 @@ function checkGuess() {
 
     }
 
+
     const input =
-        document.getElementById("guessInput");
+        document.getElementById(
+            "guessInput"
+        );
+
 
     if (!input) {
 
@@ -1458,12 +1882,15 @@ function checkGuess() {
 
     }
 
+
     const userGuess =
         input.value
             .toUpperCase()
             .trim();
 
+
     input.value = "";
+
 
     if (!userGuess) {
 
@@ -1476,6 +1903,7 @@ function checkGuess() {
 
     }
 
+
     if (!/^[A-Z ]+$/.test(userGuess)) {
 
         showMessage(
@@ -1487,14 +1915,19 @@ function checkGuess() {
 
     }
 
+
     const levelQuestions =
         getLevelQuestions();
 
-    if (!levelQuestions[currentQuestion]) {
+
+    if (
+        !levelQuestions[currentQuestion]
+    ) {
 
         return;
 
     }
+
 
     const correctAnswer =
         levelQuestions[currentQuestion][1]
@@ -1502,31 +1935,47 @@ function checkGuess() {
 
 
     /* Full answer */
-    if (userGuess.length > 1) {
 
-        if (userGuess === correctAnswer) {
+    if (
+        userGuess.length > 1
+    ) {
+
+        if (
+            userGuess === correctAnswer
+        ) {
 
             hiddenAnswer =
                 correctAnswer;
 
+
             score += 20;
+
 
             showMessage(
                 "Correct full answer! +20 points",
                 "correct"
             );
 
-            playSound("correct");
+
+            playSound(
+                "correct"
+            );
+
 
             updateGameScreen();
 
+
             answerComplete();
 
-        } else {
+        }
+        else {
 
-            wrongGuess(userGuess);
+            wrongGuess(
+                userGuess
+            );
 
         }
+
 
         return;
 
@@ -1534,9 +1983,14 @@ function checkGuess() {
 
 
     /* Single letter */
+
     if (
-        guessedLetters.includes(userGuess) ||
-        wrongLetters.includes(userGuess)
+        guessedLetters.includes(
+            userGuess
+        ) ||
+        wrongLetters.includes(
+            userGuess
+        )
     ) {
 
         showMessage(
@@ -1549,11 +2003,19 @@ function checkGuess() {
     }
 
 
-    if (correctAnswer.includes(userGuess)) {
+    if (
+        correctAnswer.includes(
+            userGuess
+        )
+    ) {
 
-        guessedLetters.push(userGuess);
+        guessedLetters.push(
+            userGuess
+        );
+
 
         let newHiddenAnswer = "";
+
 
         for (
             let i = 0;
@@ -1561,18 +2023,22 @@ function checkGuess() {
             i++
         ) {
 
-            if (correctAnswer[i] === " ") {
+            if (
+                correctAnswer[i] === " "
+            ) {
 
                 newHiddenAnswer += " ";
 
-            } else if (
+            }
+            else if (
                 correctAnswer[i] === userGuess
             ) {
 
                 newHiddenAnswer +=
                     userGuess;
 
-            } else {
+            }
+            else {
 
                 newHiddenAnswer +=
                     hiddenAnswer[i];
@@ -1581,19 +2047,27 @@ function checkGuess() {
 
         }
 
+
         hiddenAnswer =
             newHiddenAnswer;
 
+
         score += 5;
+
 
         showMessage(
             "Correct letter! +5 points",
             "correct"
         );
 
-        playSound("correct");
+
+        playSound(
+            "correct"
+        );
+
 
         updateGameScreen();
+
 
         if (
             hiddenAnswer ===
@@ -1604,11 +2078,15 @@ function checkGuess() {
 
         }
 
-    } else {
+    }
+    else {
 
-        wrongGuess(userGuess);
+        wrongGuess(
+            userGuess
+        );
 
     }
+
 }
 
 
@@ -1618,22 +2096,33 @@ function checkGuess() {
 
 function wrongGuess(userGuess) {
 
-    wrongLetters.push(userGuess);
+    wrongLetters.push(
+        userGuess
+    );
 
-    if (selectedMode !== "peaceful") {
+
+    if (
+        selectedMode !== "peaceful"
+    ) {
 
         lives--;
 
     }
+
 
     showMessage(
         "Wrong guess!",
         "wrong"
     );
 
-    playSound("wrong");
+
+    playSound(
+        "wrong"
+    );
+
 
     updateGameScreen();
+
 
     if (
         selectedMode !== "peaceful" &&
@@ -1642,14 +2131,20 @@ function wrongGuess(userGuess) {
 
         gameLocked = true;
 
+
         const levelQuestions =
             getLevelQuestions();
+
 
         const correctAnswer =
             levelQuestions[currentQuestion][1];
 
+
         const message =
-            document.getElementById("message");
+            document.getElementById(
+                "message"
+            );
+
 
         if (message) {
 
@@ -1659,6 +2154,7 @@ function wrongGuess(userGuess) {
 
         }
 
+
         setTimeout(function() {
 
             alert(
@@ -1667,13 +2163,16 @@ function wrongGuess(userGuess) {
                 ". Try again."
             );
 
+
             playSelectedLevel(
                 currentLevel
             );
 
+
         }, 1500);
 
     }
+
 }
 
 
@@ -1685,8 +2184,12 @@ function answerComplete() {
 
     gameLocked = true;
 
+
     const message =
-        document.getElementById("message");
+        document.getElementById(
+            "message"
+        );
+
 
     if (message) {
 
@@ -1695,51 +2198,72 @@ function answerComplete() {
 
     }
 
+
     setTimeout(function() {
 
         currentQuestion++;
 
-        if (currentQuestion < 5) {
+
+        if (
+            currentQuestion < 5
+        ) {
 
             loadQuestion();
 
-        } else {
+        }
+        else {
 
             levelComplete();
 
         }
 
     }, 1000);
+
 }
 
 
 /* =========================================================
    LEVEL COMPLETE
-   PLAYER-SPECIFIC SAVE
 ========================================================= */
 
 function levelComplete() {
 
-    playSound("win");
+    /*
+     * PLAY LEVEL COMPLETE MP3
+     */
+
+    playSound(
+        "level"
+    );
+
 
     levelWasCompleted = true;
 
-    if (currentLevel < 20) {
+
+    if (
+        currentLevel < 20
+    ) {
 
         const nextUnlockedLevel =
             currentLevel + 1;
+
 
         saveUnlockedLevel(
             nextUnlockedLevel
         );
 
-    } else {
+    }
+    else {
 
-        saveUnlockedLevel(20);
+        saveUnlockedLevel(
+            20
+        );
 
     }
 
+
     showLevelProgress();
+
 }
 
 
@@ -1811,11 +2335,19 @@ const levelScreenHTML = `
 `;
 
 
-/* Insert only once */
-if (!document.getElementById("levelProgressScreen")) {
+/* Insert level screen */
+
+if (
+    !document.getElementById(
+        "levelProgressScreen"
+    )
+) {
 
     const container =
-        document.querySelector(".container");
+        document.querySelector(
+            ".container"
+        );
+
 
     if (container) {
 
@@ -1830,13 +2362,15 @@ if (!document.getElementById("levelProgressScreen")) {
 
 
 /* =========================================================
-   SHOW LEVELS
+   SHOW LEVEL PROGRESS
 ========================================================= */
 
 function showLevelProgress() {
 
-    if (!currentPlayerName ||
-        !currentPlayerKey) {
+    if (
+        !currentPlayerName ||
+        !currentPlayerKey
+    ) {
 
         showPlayerScreen();
 
@@ -1844,28 +2378,34 @@ function showLevelProgress() {
 
     }
 
+
     const savedLevel =
         getSavedLevel();
+
 
     const levelCards =
         document.getElementById(
             "levelCards"
         );
 
+
     const title =
         document.getElementById(
             "levelProgressTitle"
         );
+
 
     const text =
         document.getElementById(
             "levelProgressText"
         );
 
+
     const completeImage =
         document.querySelector(
             ".level-complete-image"
         );
+
 
     const playerDisplay =
         document.getElementById(
@@ -1890,6 +2430,7 @@ function showLevelProgress() {
 
     }
 
+
     levelCards.innerHTML = "";
 
 
@@ -1902,6 +2443,7 @@ function showLevelProgress() {
 
         }
 
+
         if (title) {
 
             title.textContent =
@@ -1911,16 +2453,20 @@ function showLevelProgress() {
 
         }
 
+
         if (text) {
 
-            if (currentLevel < 20) {
+            if (
+                currentLevel < 20
+            ) {
 
                 text.textContent =
                     "Great job! Level " +
                     savedLevel +
                     " is now unlocked.";
 
-            } else {
+            }
+            else {
 
                 text.textContent =
                     "🏆 Congratulations! You completed all 20 levels.";
@@ -1929,7 +2475,8 @@ function showLevelProgress() {
 
         }
 
-    } else {
+    }
+    else {
 
         if (completeImage) {
 
@@ -1938,12 +2485,14 @@ function showLevelProgress() {
 
         }
 
+
         if (title) {
 
             title.textContent =
                 "SELECT LEVEL";
 
         }
+
 
         if (text) {
 
@@ -1964,32 +2513,43 @@ function showLevelProgress() {
     ) {
 
         const card =
-            document.createElement("button");
+            document.createElement(
+                "button"
+            );
+
 
         card.classList.add(
             "level-card"
         );
 
 
-        if (number <= savedLevel) {
+        if (
+            number <= savedLevel
+        ) {
 
             card.textContent =
                 "🔓 Level " +
                 number;
 
+
             card.style.background =
                 "#277d48";
+
 
             card.style.color =
                 "white";
 
+
             card.style.border =
                 "2px solid #8cf5a2";
+
 
             card.style.cursor =
                 "pointer";
 
+
             card.disabled = false;
+
 
             card.addEventListener(
                 "click",
@@ -2002,30 +2562,38 @@ function showLevelProgress() {
                 }
             );
 
-        } else {
+        }
+        else {
 
             card.textContent =
                 "🔒 Level " +
                 number;
 
+
             card.style.background =
                 "#303030";
+
 
             card.style.color =
                 "#a8a8a8";
 
+
             card.style.border =
                 "2px solid #555";
 
+
             card.style.cursor =
                 "not-allowed";
+
 
             card.disabled = true;
 
         }
 
 
-        levelCards.appendChild(card);
+        levelCards.appendChild(
+            card
+        );
 
     }
 
@@ -2034,6 +2602,7 @@ function showLevelProgress() {
         document.getElementById(
             "continueLevelButton"
         );
+
 
     if (continueButton) {
 
@@ -2046,6 +2615,7 @@ function showLevelProgress() {
     showScreen(
         "levelProgressScreen"
     );
+
 }
 
 
@@ -2058,6 +2628,7 @@ function nextLevel() {
     levelWasCompleted = false;
 
     showLevelProgress();
+
 }
 
 
@@ -2075,106 +2646,41 @@ function showMessage(
             "message"
         );
 
+
     if (!message) {
 
         return;
 
     }
 
+
     message.textContent =
         text;
 
-    if (type === "correct") {
+
+    if (
+        type === "correct"
+    ) {
 
         message.style.color =
             "#69f4bd";
 
-    } else if (type === "wrong") {
+    }
+    else if (
+        type === "wrong"
+    ) {
 
         message.style.color =
             "#ff799e";
 
-    } else {
+    }
+    else {
 
         message.style.color =
             "#ffb39f";
 
     }
-}
 
-
-/* =========================================================
-   SOUND
-========================================================= */
-
-function playSound(type) {
-
-    if (!soundOn) {
-
-        return;
-
-    }
-
-    try {
-
-        const AudioClass =
-            window.AudioContext ||
-            window.webkitAudioContext;
-
-        if (!AudioClass) {
-
-            return;
-
-        }
-
-        const audio =
-            new AudioClass();
-
-        const oscillator =
-            audio.createOscillator();
-
-        const gain =
-            audio.createGain();
-
-        if (type === "correct") {
-
-            oscillator.frequency.value =
-                700;
-
-        } else if (type === "wrong") {
-
-            oscillator.frequency.value =
-                180;
-
-        } else if (type === "win") {
-
-            oscillator.frequency.value =
-                1000;
-
-        }
-
-        gain.gain.value =
-            0.08;
-
-        oscillator.connect(gain);
-
-        gain.connect(
-            audio.destination
-        );
-
-        oscillator.start();
-
-        oscillator.stop(
-            audio.currentTime + 0.15
-        );
-
-    } catch (error) {
-
-        console.log(
-            "Sound cannot play."
-        );
-
-    }
 }
 
 
@@ -2189,20 +2695,26 @@ function drawHangman() {
             "hangmanCanvas"
         );
 
+
     if (!canvas) {
 
         return;
 
     }
 
+
     const context =
-        canvas.getContext("2d");
+        canvas.getContext(
+            "2d"
+        );
+
 
     if (!context) {
 
         return;
 
     }
+
 
     context.clearRect(
         0,
@@ -2211,10 +2723,13 @@ function drawHangman() {
         260
     );
 
+
     context.strokeStyle =
         "#55d9ff";
 
+
     context.lineWidth = 5;
+
 
     context.lineCap =
         "round";
@@ -2224,35 +2739,42 @@ function drawHangman() {
 
     context.beginPath();
 
+
     context.moveTo(
         25,
         235
     );
+
 
     context.lineTo(
         220,
         235
     );
 
+
     context.moveTo(
         65,
         235
     );
 
+
     context.lineTo(
         65,
         25
     );
 
+
     context.lineTo(
         170,
         25
     );
 
+
     context.lineTo(
         170,
         55
     );
+
 
     context.stroke();
 
@@ -2263,9 +2785,12 @@ function drawHangman() {
 
     /* Head */
 
-    if (wrongCount >= 1) {
+    if (
+        wrongCount >= 1
+    ) {
 
         context.beginPath();
+
 
         context.arc(
             170,
@@ -2275,6 +2800,7 @@ function drawHangman() {
             Math.PI * 2
         );
 
+
         context.stroke();
 
     }
@@ -2282,19 +2808,24 @@ function drawHangman() {
 
     /* Body */
 
-    if (wrongCount >= 2) {
+    if (
+        wrongCount >= 2
+    ) {
 
         context.beginPath();
+
 
         context.moveTo(
             170,
             100
         );
 
+
         context.lineTo(
             170,
             155
         );
+
 
         context.stroke();
 
@@ -2303,19 +2834,24 @@ function drawHangman() {
 
     /* Left Arm */
 
-    if (wrongCount >= 3) {
+    if (
+        wrongCount >= 3
+    ) {
 
         context.beginPath();
+
 
         context.moveTo(
             170,
             118
         );
 
+
         context.lineTo(
             138,
             140
         );
+
 
         context.stroke();
 
@@ -2324,19 +2860,24 @@ function drawHangman() {
 
     /* Right Arm */
 
-    if (wrongCount >= 4) {
+    if (
+        wrongCount >= 4
+    ) {
 
         context.beginPath();
+
 
         context.moveTo(
             170,
             118
         );
 
+
         context.lineTo(
             202,
             140
         );
+
 
         context.stroke();
 
@@ -2345,19 +2886,24 @@ function drawHangman() {
 
     /* Left Leg */
 
-    if (wrongCount >= 5) {
+    if (
+        wrongCount >= 5
+    ) {
 
         context.beginPath();
+
 
         context.moveTo(
             170,
             155
         );
 
+
         context.lineTo(
             142,
             195
         );
+
 
         context.stroke();
 
@@ -2366,19 +2912,24 @@ function drawHangman() {
 
     /* Right Leg */
 
-    if (wrongCount >= 6) {
+    if (
+        wrongCount >= 6
+    ) {
 
         context.beginPath();
+
 
         context.moveTo(
             170,
             155
         );
 
+
         context.lineTo(
             198,
             195
         );
+
 
         context.stroke();
 
@@ -2397,7 +2948,10 @@ function addClick(
 ) {
 
     const element =
-        document.getElementById(id);
+        document.getElementById(
+            id
+        );
+
 
     if (element) {
 
@@ -2407,6 +2961,7 @@ function addClick(
         );
 
     }
+
 }
 
 
@@ -2432,12 +2987,15 @@ addClick(
 );
 
 
-/* Enter key for player name */
+/* =========================================================
+   PLAYER ENTER KEY
+========================================================= */
 
 const playerInput =
     document.getElementById(
         "playerNameInput"
     );
+
 
 if (playerInput) {
 
@@ -2466,6 +3024,14 @@ if (playerInput) {
 addClick(
     "startButton",
     function() {
+
+        /*
+         * Start music from actual
+         * user interaction.
+         */
+
+        startBackgroundMusic();
+
 
         showPlayerScreen();
 
@@ -2547,6 +3113,7 @@ addClick(
             "laptop"
         );
 
+
         showScreen(
             "modeScreen"
         );
@@ -2566,6 +3133,7 @@ addClick(
         changeDeviceLayout(
             "mobile"
         );
+
 
         showScreen(
             "modeScreen"
@@ -2616,7 +3184,7 @@ addClick(
 
 
 /* =========================================================
-   GUESS
+   GUESS BUTTON
 ========================================================= */
 
 addClick(
@@ -2630,13 +3198,14 @@ addClick(
 
 
 /* =========================================================
-   GUESS ENTER
+   GUESS ENTER KEY
 ========================================================= */
 
 const guessInput =
     document.getElementById(
         "guessInput"
     );
+
 
 if (guessInput) {
 
@@ -2669,6 +3238,7 @@ addClick(
         levelWasCompleted =
             false;
 
+
         showLevelProgress();
 
     }
@@ -2692,7 +3262,7 @@ addClick(
 
 
 /* =========================================================
-   NEXT LEVEL
+   NEXT LEVEL BUTTON
 ========================================================= */
 
 addClick(
@@ -2750,31 +3320,14 @@ addClick(
 
 
 /* =========================================================
-   SOUND
+   🔊 SOUND BUTTON
 ========================================================= */
 
 addClick(
     "soundButton",
     function() {
 
-        soundOn =
-            !soundOn;
-
-        const button =
-            document.getElementById(
-                "soundButton"
-            );
-
-        if (!button) {
-
-            return;
-
-        }
-
-        button.textContent =
-            soundOn
-                ? "🔊"
-                : "🔇";
+        toggleSound();
 
     }
 );
@@ -2785,32 +3338,36 @@ addClick(
 ========================================================= */
 
 const mobileStyle =
-    document.createElement("style");
+    document.createElement(
+        "style"
+    );
+
 
 mobileStyle.textContent = `
 
-    body.mobile-view .game-area {
-        grid-template-columns: 1fr;
-    }
+body.mobile-view .game-area {
+    grid-template-columns: 1fr;
+}
 
-    body.mobile-view .game-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+body.mobile-view .game-header {
+    flex-direction: column;
+    align-items: flex-start;
+}
 
-    body.mobile-view .input-area {
-        flex-direction: column;
-    }
+body.mobile-view .input-area {
+    flex-direction: column;
+}
 
-    body.mobile-view .input-area button {
-        width: 100%;
-    }
+body.mobile-view .input-area button {
+    width: 100%;
+}
 
-    body.mobile-view .answer-display {
-        letter-spacing: 4px;
-    }
+body.mobile-view .answer-display {
+    letter-spacing: 4px;
+}
 
 `;
+
 
 document.head.appendChild(
     mobileStyle
@@ -2818,33 +3375,62 @@ document.head.appendChild(
 
 
 /* =========================================================
-   LOGO SYSTEM - FIXED
+   LOGO SYSTEM
 ========================================================= */
 
 function addLogoToAllScreens() {
 
-    const allScreens = document.querySelectorAll(".screen");
+    const allScreens =
+        document.querySelectorAll(
+            ".screen"
+        );
 
-    allScreens.forEach(function(screen) {
 
-        if (screen.querySelector(".side-game-logo")) {
-            return;
+    allScreens.forEach(
+        function(screen) {
+
+            if (
+                screen.querySelector(
+                    ".side-game-logo"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            const logo =
+                document.createElement(
+                    "img"
+                );
+
+
+            logo.src =
+                "./assets/hangman-logo.png";
+
+
+            logo.alt =
+                "Hangman Game Logo";
+
+
+            logo.classList.add(
+                "side-game-logo"
+            );
+
+
+            screen.appendChild(
+                logo
+            );
+
         }
+    );
 
-        const logo = document.createElement("img");
-
-        logo.src = "./assets/hangman-logo.png";
-        logo.alt = "Hangman Game Logo";
-        logo.classList.add("side-game-logo");
-
-        screen.appendChild(logo);
-
-    });
 }
 
 
 /* =========================================================
-   STARTUP LOGO ANIMATION - SAFE VERSION
+   STARTUP LOGO ANIMATION
 ========================================================= */
 
 function showStartLogoAnimation() {
@@ -2852,16 +3438,15 @@ function showStartLogoAnimation() {
     try {
 
         const backgroundLogo =
-            document.querySelector(".side-game-logo");
+            document.querySelector(
+                ".side-game-logo"
+            );
 
-        /*
-         * IMPORTANT:
-         * If logo does not exist, DO NOT leave the page hidden.
-         */
 
         if (!backgroundLogo) {
 
             finishLogoAnimation();
+
             return;
 
         }
@@ -2871,35 +3456,39 @@ function showStartLogoAnimation() {
             backgroundLogo.getBoundingClientRect();
 
 
-        /*
-         * If logo has no size, skip animation safely.
-         */
-
         if (
             startRect.width <= 0 ||
             startRect.height <= 0
         ) {
 
             finishLogoAnimation();
+
             return;
 
         }
 
 
         const logo =
-            document.createElement("img");
+            document.createElement(
+                "img"
+            );
+
 
         logo.src =
             backgroundLogo.src;
 
+
         logo.alt =
             "Hangman Game";
+
 
         logo.className =
             "startup-moving-logo";
 
 
-        document.body.appendChild(logo);
+        document.body.appendChild(
+            logo
+        );
 
 
         document.documentElement.classList.add(
@@ -2914,17 +3503,22 @@ function showStartLogoAnimation() {
         logo.style.position =
             "fixed";
 
+
         logo.style.zIndex =
             "99999";
+
 
         logo.style.left =
             startRect.left + "px";
 
+
         logo.style.top =
             startRect.top + "px";
 
+
         logo.style.width =
             startRect.width + "px";
+
 
         logo.style.height =
             startRect.height + "px";
@@ -2950,140 +3544,164 @@ function showStartLogoAnimation() {
 
 
         const targetLeft =
-            (window.innerWidth -
-                targetWidth) / 2;
+            (
+                window.innerWidth -
+                targetWidth
+            ) / 2;
 
 
         const targetTop =
-            (window.innerHeight -
-                targetHeight) / 2;
+            (
+                window.innerHeight -
+                targetHeight
+            ) / 2;
 
-
-        /*
-         * Force browser to register initial position.
-         */
 
         logo.getBoundingClientRect();
 
 
-        requestAnimationFrame(function() {
+        requestAnimationFrame(
+            function() {
 
-            logo.style.transition =
-                "left 900ms cubic-bezier(.16,1,.3,1)," +
-                "top 900ms cubic-bezier(.16,1,.3,1)," +
-                "width 900ms cubic-bezier(.16,1,.3,1)," +
-                "height 900ms cubic-bezier(.16,1,.3,1)," +
-                "transform 900ms cubic-bezier(.16,1,.3,1)";
-
-
-            logo.style.left =
-                targetLeft + "px";
-
-            logo.style.top =
-                targetTop + "px";
-
-            logo.style.width =
-                targetWidth + "px";
-
-            logo.style.height =
-                targetHeight + "px";
-
-            logo.style.transform =
-                "scale(1.08) rotate(2deg)";
-
-        });
+                logo.style.transition =
+                    "left 900ms cubic-bezier(.16,1,.3,1)," +
+                    "top 900ms cubic-bezier(.16,1,.3,1)," +
+                    "width 900ms cubic-bezier(.16,1,.3,1)," +
+                    "height 900ms cubic-bezier(.16,1,.3,1)," +
+                    "transform 900ms cubic-bezier(.16,1,.3,1)";
 
 
-        /*
-         * Small bounce.
-         */
+                logo.style.left =
+                    targetLeft + "px";
 
-        setTimeout(function() {
 
-            if (!logo.isConnected) {
-                return;
+                logo.style.top =
+                    targetTop + "px";
+
+
+                logo.style.width =
+                    targetWidth + "px";
+
+
+                logo.style.height =
+                    targetHeight + "px";
+
+
+                logo.style.transform =
+                    "scale(1.08) rotate(2deg)";
+
             }
-
-            logo.style.transition =
-                "transform 350ms ease-in-out";
-
-            logo.style.transform =
-                "scale(0.96) rotate(-1deg)";
-
-        }, 950);
+        );
 
 
-        setTimeout(function() {
+        setTimeout(
+            function() {
 
-            if (!logo.isConnected) {
-                return;
-            }
+                if (
+                    !logo.isConnected
+                ) {
 
-            logo.style.transform =
-                "scale(1) rotate(0deg)";
+                    return;
 
-        }, 1300);
-
-
-        /*
-         * Return logo to original position.
-         */
-
-        setTimeout(function() {
-
-            if (!logo.isConnected) {
-                return;
-            }
-
-            logo.style.transition =
-                "left 900ms cubic-bezier(.7,0,.84,0)," +
-                "top 900ms cubic-bezier(.7,0,.84,0)," +
-                "width 900ms cubic-bezier(.7,0,.84,0)," +
-                "height 900ms cubic-bezier(.7,0,.84,0)," +
-                "transform 900ms cubic-bezier(.7,0,.84,0)";
+                }
 
 
-            logo.style.left =
-                startRect.left + "px";
-
-            logo.style.top =
-                startRect.top + "px";
-
-            logo.style.width =
-                startRect.width + "px";
-
-            logo.style.height =
-                startRect.height + "px";
-
-            logo.style.transform =
-                "scale(1) rotate(0deg)";
-
-        }, 1700);
+                logo.style.transition =
+                    "transform 350ms ease-in-out";
 
 
-        /*
-         * FINISH.
-         *
-         * This is the important part.
-         */
+                logo.style.transform =
+                    "scale(0.96) rotate(-1deg)";
 
-        setTimeout(function() {
-
-            finishLogoAnimation(logo);
-
-        }, 2650);
+            },
+            950
+        );
 
 
-    } catch (error) {
+        setTimeout(
+            function() {
+
+                if (
+                    !logo.isConnected
+                ) {
+
+                    return;
+
+                }
+
+
+                logo.style.transform =
+                    "scale(1) rotate(0deg)";
+
+            },
+            1300
+        );
+
+
+        setTimeout(
+            function() {
+
+                if (
+                    !logo.isConnected
+                ) {
+
+                    return;
+
+                }
+
+
+                logo.style.transition =
+                    "left 900ms cubic-bezier(.7,0,.84,0)," +
+                    "top 900ms cubic-bezier(.7,0,.84,0)," +
+                    "width 900ms cubic-bezier(.7,0,.84,0)," +
+                    "height 900ms cubic-bezier(.7,0,.84,0)," +
+                    "transform 900ms cubic-bezier(.7,0,.84,0)";
+
+
+                logo.style.left =
+                    startRect.left + "px";
+
+
+                logo.style.top =
+                    startRect.top + "px";
+
+
+                logo.style.width =
+                    startRect.width + "px";
+
+
+                logo.style.height =
+                    startRect.height + "px";
+
+
+                logo.style.transform =
+                    "scale(1) rotate(0deg)";
+
+            },
+            1700
+        );
+
+
+        setTimeout(
+            function() {
+
+                finishLogoAnimation(
+                    logo
+                );
+
+            },
+            2650
+        );
+
+
+    }
+    catch (error) {
 
         console.error(
             "Logo animation error:",
             error
         );
 
-        /*
-         * NEVER leave screen blank.
-         */
 
         finishLogoAnimation();
 
@@ -3094,54 +3712,59 @@ function showStartLogoAnimation() {
 
 /* =========================================================
    FINISH LOGO ANIMATION
-   NEVER LEAVE PAGE BLANK
 ========================================================= */
 
-function finishLogoAnimation(logo) {
-
-    /*
-     * Remove hidden state.
-     */
+function finishLogoAnimation(
+    logo
+) {
 
     document.documentElement.classList.remove(
         "logo-opening"
     );
 
 
-    /*
-     * Remove moving logo.
-     */
+    if (
+        logo &&
+        logo.parentNode
+    ) {
 
-    if (logo && logo.parentNode) {
-
-        logo.parentNode.removeChild(logo);
+        logo.parentNode.removeChild(
+            logo
+        );
 
     }
 
-
-    /*
-     * Restore all visual elements.
-     */
 
     const backgroundLogos =
         document.querySelectorAll(
             ".side-game-logo"
         );
 
-    backgroundLogos.forEach(function(item) {
 
-        item.style.opacity = "0.95";
+    backgroundLogos.forEach(
+        function(item) {
 
-    });
+            item.style.opacity =
+                "0.95";
+
+        }
+    );
 
 
     const container =
-        document.querySelector(".container");
+        document.querySelector(
+            ".container"
+        );
+
 
     if (container) {
 
-        container.style.opacity = "1";
-        container.style.visibility = "visible";
+        container.style.opacity =
+            "1";
+
+
+        container.style.visibility =
+            "visible";
 
     }
 
@@ -3151,11 +3774,16 @@ function finishLogoAnimation(logo) {
             "gameVideoBackground"
         );
 
+
     if (video) {
 
-        video.style.opacity = "1";
+        video.style.opacity =
+            "1";
 
-        video.play().catch(function() {});
+
+        video.play().catch(
+            function() {}
+        );
 
     }
 
@@ -3165,47 +3793,50 @@ function finishLogoAnimation(logo) {
             "videoOverlay"
         );
 
+
     if (overlay) {
 
-        overlay.style.opacity = "1";
+        overlay.style.opacity =
+            "1";
 
     }
 
-
-    /*
-     * Remove black intro layer.
-     */
 
     const blackout =
         document.getElementById(
             "logoBlackout"
         );
 
+
     if (blackout) {
 
-        blackout.classList.add("reveal");
+        blackout.classList.add(
+            "reveal"
+        );
 
-        setTimeout(function() {
 
-            blackout.style.display = "none";
+        setTimeout(
+            function() {
 
-        }, 1000);
+                blackout.style.display =
+                    "none";
+
+            },
+            1000
+        );
 
     }
 
 
-    /*
-     * MOST IMPORTANT:
-     * Show welcome screen.
-     */
-
-    showScreen("welcomeScreen");
+    showScreen(
+        "welcomeScreen"
+    );
 
 }
 
 
 /* =========================================================
-   EMERGENCY BLANK-SCREEN PREVENTION
+   EMERGENCY SCREEN FIX
 ========================================================= */
 
 function emergencyScreenFix() {
@@ -3216,12 +3847,19 @@ function emergencyScreenFix() {
 
 
     const container =
-        document.querySelector(".container");
+        document.querySelector(
+            ".container"
+        );
+
 
     if (container) {
 
-        container.style.opacity = "1";
-        container.style.visibility = "visible";
+        container.style.opacity =
+            "1";
+
+
+        container.style.visibility =
+            "visible";
 
     }
 
@@ -3231,9 +3869,11 @@ function emergencyScreenFix() {
             "gameVideoBackground"
         );
 
+
     if (video) {
 
-        video.style.opacity = "1";
+        video.style.opacity =
+            "1";
 
     }
 
@@ -3243,9 +3883,11 @@ function emergencyScreenFix() {
             "videoOverlay"
         );
 
+
     if (overlay) {
 
-        overlay.style.opacity = "1";
+        overlay.style.opacity =
+            "1";
 
     }
 
@@ -3255,9 +3897,13 @@ function emergencyScreenFix() {
             "logoBlackout"
         );
 
+
     if (blackout) {
 
-        blackout.classList.add("reveal");
+        blackout.classList.add(
+            "reveal"
+        );
+
 
         blackout.style.pointerEvents =
             "none";
@@ -3270,17 +3916,27 @@ function emergencyScreenFix() {
             "welcomeScreen"
         );
 
+
     if (welcome) {
 
         document
-            .querySelectorAll(".screen")
-            .forEach(function(screen) {
+            .querySelectorAll(
+                ".screen"
+            )
+            .forEach(
+                function(screen) {
 
-                screen.classList.remove("active");
+                    screen.classList.remove(
+                        "active"
+                    );
 
-            });
+                }
+            );
 
-        welcome.classList.add("active");
+
+        welcome.classList.add(
+            "active"
+        );
 
     }
 
@@ -3295,106 +3951,101 @@ function initializeGame() {
 
     try {
 
-        /*
-         * First make all screens ready.
-         */
-
         addLogoToAllScreens();
 
-
-        /*
-         * Make welcome screen active.
-         */
 
         showScreen(
             "welcomeScreen"
         );
 
 
-        /*
-         * Make container visible.
-         */
-
         const container =
             document.querySelector(
                 ".container"
             );
 
+
         if (container) {
 
-            container.style.opacity = "1";
-            container.style.visibility = "visible";
+            container.style.opacity =
+                "1";
+
+
+            container.style.visibility =
+                "visible";
 
         }
 
-
-        /*
-         * Start background video.
-         */
 
         const video =
             document.getElementById(
                 "gameVideoBackground"
             );
 
+
         if (video) {
 
-            video.style.opacity = "1";
+            video.style.opacity =
+                "1";
+
 
             const playPromise =
                 video.play();
 
+
             if (
                 playPromise &&
-                typeof playPromise.catch === "function"
+                typeof playPromise.catch ===
+                "function"
             ) {
 
-                playPromise.catch(function() {
+                playPromise.catch(
+                    function() {
 
-                    console.log(
-                        "Video autoplay waiting for browser permission."
-                    );
+                        console.log(
+                            "Video autoplay waiting for browser permission."
+                        );
 
-                });
+                    }
+                );
 
             }
 
         }
 
 
-        /*
-         * Overlay visible.
-         */
-
         const overlay =
             document.getElementById(
                 "videoOverlay"
             );
 
+
         if (overlay) {
 
-            overlay.style.opacity = "1";
+            overlay.style.opacity =
+                "1";
 
         }
 
 
-        /*
-         * Start logo animation.
-         */
+        setTimeout(
+            function() {
 
-        setTimeout(function() {
+                showStartLogoAnimation();
 
-            showStartLogoAnimation();
+            },
+            100
+        );
 
-        }, 100);
 
-
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
             "Game initialization error:",
             error
         );
+
 
         emergencyScreenFix();
 
@@ -3405,54 +4056,49 @@ function initializeGame() {
 
 /* =========================================================
    GLOBAL FAILSAFE
-   If anything goes wrong, page becomes visible.
 ========================================================= */
 
-setTimeout(function() {
+setTimeout(
+    function() {
 
-    const opening =
-        document.documentElement.classList.contains(
-            "logo-opening"
-        );
-
-    const welcome =
-        document.getElementById(
-            "welcomeScreen"
-        );
-
-    /*
-     * If logo animation is still running
-     * after 4 seconds, force finish.
-     */
-
-    if (opening) {
-
-        console.warn(
-            "Logo animation timeout - forcing finish."
-        );
-
-        finishLogoAnimation();
-
-    }
+        const opening =
+            document.documentElement.classList.contains(
+                "logo-opening"
+            );
 
 
-    /*
-     * If no screen is active,
-     * show welcome screen.
-     */
+        const welcome =
+            document.getElementById(
+                "welcomeScreen"
+            );
 
-    if (
-        welcome &&
-        !document.querySelector(
-            ".screen.active"
-        )
-    ) {
 
-        emergencyScreenFix();
+        if (opening) {
 
-    }
+            console.warn(
+                "Logo animation timeout - forcing finish."
+            );
 
-}, 4500);
+
+            finishLogoAnimation();
+
+        }
+
+
+        if (
+            welcome &&
+            !document.querySelector(
+                ".screen.active"
+            )
+        ) {
+
+            emergencyScreenFix();
+
+        }
+
+    },
+    4500
+);
 
 
 /* =========================================================
@@ -3472,7 +4118,8 @@ if (
         }
     );
 
-} else {
+}
+else {
 
     initializeGame();
 
