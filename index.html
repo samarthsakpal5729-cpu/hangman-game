@@ -1,42 +1,729 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Hangman Game</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Hangman Game | Samarth</title>
 
     <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        /* =====================================================
+           VIDEO BACKGROUND
+        ===================================================== */
+
+        #gameVideoBackground {
+            position: fixed;
+            inset: 0;
+
+            width: 100vw;
+            height: 100vh;
+
+            object-fit: cover;
+
+            z-index: 0;
+
+            pointer-events: none;
+
+            background: #050000;
+
+            filter:
+                brightness(0.72)
+                contrast(1.18)
+                saturate(1.25);
+        }
+
+
+        /* =====================================================
+           RED / BLACK VIDEO OVERLAY
+        ===================================================== */
+
+        #videoOverlay {
+
+            position: fixed;
+            inset: 0;
+
+            width: 100vw;
+            height: 100vh;
+
+            z-index: 1;
+
+            pointer-events: none;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(20,0,0,0.28),
+                    rgba(0,0,0,0.48)
+                ),
+                radial-gradient(
+                    circle at center,
+                    rgba(255,30,0,0.08),
+                    rgba(0,0,0,0.55)
+                );
+        }
+
+
+        /* =====================================================
+           MAIN CONTAINER
+        ===================================================== */
+
+        .container {
+
+            position: relative;
+
+            z-index: 2;
+
+            min-height: 100vh;
+
+            width: 100%;
+
+        }
+
+
+        /* =====================================================
+           ALL SCREENS
+        ===================================================== */
+
+        .screen {
+
+            position: relative;
+
+            z-index: 5;
+
+            min-height: 100vh;
+
+            background: transparent !important;
+
+            background-color: transparent !important;
+
+        }
+
+
+        /* =====================================================
+           TRANSPARENT UI
+        ===================================================== */
+
+        #welcomeScreen,
+        #deviceScreen,
+        #modeScreen,
+        #gameScreen,
+        #completeScreen,
+        #instructionScreen {
+
+            background: transparent !important;
+
+        }
+
+
+        /* =====================================================
+           GLASS EFFECT
+        ===================================================== */
+
+        .welcome-box,
+        .box,
+        .game-card,
+        .complete-box {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30,0,0,0.70),
+                    rgba(0,0,0,0.52)
+                ) !important;
+
+            border:
+                1px solid rgba(255,55,20,0.42) !important;
+
+            box-shadow:
+
+                0 0 15px rgba(255,30,0,0.15),
+
+                0 0 45px rgba(130,0,0,0.18),
+
+                inset 0 0 30px rgba(255,20,0,0.035) !important;
+
+            backdrop-filter: blur(5px);
+
+            -webkit-backdrop-filter: blur(5px);
+
+        }
+
+
+        /* =====================================================
+           RED GLOW TEXT
+        ===================================================== */
+
+        h1,
+        h2,
+        h3 {
+
+            text-shadow:
+                0 0 5px rgba(255,40,10,0.65),
+                0 0 18px rgba(180,0,0,0.40);
+
+        }
+
+
+        /* =====================================================
+           MAIN TITLE
+        ===================================================== */
+
+        .welcome-box h1 {
+
+            color: #ff3b18 !important;
+
+            letter-spacing: 4px;
+
+            text-shadow:
+                0 0 5px #ff2400,
+                0 0 15px #c00000,
+                0 0 35px rgba(255,20,0,0.65);
+
+        }
+
+
+        /* =====================================================
+           NORMAL TEXT
+        ===================================================== */
+
+        .welcome-box p,
+        .box p,
+        .complete-box p,
+        .instructions p,
+        label {
+
+            color: rgba(255,235,225,0.88);
+
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .main-button {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ff3b18,
+                    #a90000
+                ) !important;
+
+            color: white !important;
+
+            border:
+                1px solid rgba(255,110,80,0.7) !important;
+
+            box-shadow:
+                0 0 10px rgba(255,35,0,0.35),
+                0 0 25px rgba(180,0,0,0.25);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                filter 0.2s ease;
+
+        }
+
+
+        .main-button:hover {
+
+            transform: translateY(-3px) scale(1.02);
+
+            filter: brightness(1.15);
+
+            box-shadow:
+                0 0 15px rgba(255,45,0,0.75),
+                0 0 35px rgba(220,0,0,0.45);
+
+        }
+
+
+        .small-button {
+
+            border-color:
+                rgba(255,60,30,0.45) !important;
+
+            color:
+                #ff755c !important;
+
+            background:
+                rgba(40,0,0,0.50) !important;
+
+        }
+
+
+        .small-button:hover {
+
+            background:
+                rgba(130,0,0,0.45) !important;
+
+            box-shadow:
+                0 0 15px rgba(255,30,0,0.3);
+
+        }
+
+
+        /* =====================================================
+           DEVICE / MODE BUTTONS
+        ===================================================== */
+
+        .device-button,
+        .mode-button {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(40,0,0,0.75),
+                    rgba(5,0,0,0.65)
+                ) !important;
+
+            border-color:
+                rgba(255,50,20,0.38) !important;
+
+            color:
+                #ffe9e2 !important;
+
+            box-shadow:
+                inset 0 0 20px rgba(255,20,0,0.035);
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+
+        }
+
+
+        .device-button:hover,
+        .mode-button:hover {
+
+            transform: translateY(-3px);
+
+            border-color:
+                rgba(255,70,35,0.8) !important;
+
+            box-shadow:
+                0 0 18px rgba(255,30,0,0.3);
+
+        }
+
+
+        /* =====================================================
+           QUESTION / GAME CARD
+        ===================================================== */
+
+        .game-card {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30,0,0,0.72),
+                    rgba(0,0,0,0.55)
+                ) !important;
+
+        }
+
+
+        /* =====================================================
+           CATEGORY
+        ===================================================== */
+
+        .category {
+
+            background:
+                rgba(150,0,0,0.38) !important;
+
+            color:
+                #ff7258 !important;
+
+            border:
+                1px solid rgba(255,60,30,0.35);
+
+            box-shadow:
+                0 0 10px rgba(255,30,0,0.15);
+
+        }
+
+
+        /* =====================================================
+           ANSWER DISPLAY
+        ===================================================== */
+
+        .answer-display {
+
+            color:
+                #ff5938 !important;
+
+            text-shadow:
+                0 0 8px rgba(255,40,10,0.7);
+
+        }
+
+
+        /* =====================================================
+           INPUT
+        ===================================================== */
+
+        #guessInput {
+
+            background:
+                rgba(5,0,0,0.75) !important;
+
+            color:
+                #ffffff !important;
+
+            border:
+                1px solid rgba(255,55,25,0.45) !important;
+
+            box-shadow:
+                inset 0 0 15px rgba(255,20,0,0.08);
+
+        }
+
+
+        #guessInput:focus {
+
+            border-color:
+                #ff3b18 !important;
+
+            outline: none;
+
+            box-shadow:
+                0 0 12px rgba(255,40,10,0.45),
+                inset 0 0 15px rgba(255,20,0,0.08);
+
+        }
+
+
+        /* =====================================================
+           PROGRESS BAR
+        ===================================================== */
+
+        .progress-bar {
+
+            background:
+                rgba(20,0,0,0.70) !important;
+
+            border:
+                1px solid rgba(255,40,20,0.20);
+
+        }
+
+
+        #progress {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #8b0000,
+                    #ff3214,
+                    #ff754f
+                ) !important;
+
+            box-shadow:
+                0 0 12px rgba(255,40,10,0.65);
+
+        }
+
+
+        /* =====================================================
+           STATS
+        ===================================================== */
+
+        .stats span {
+
+            color:
+                rgba(255,225,215,0.85);
+
+        }
+
+
+        .stats b {
+
+            color:
+                #ff674b;
+
+            text-shadow:
+                0 0 6px rgba(255,40,10,0.45);
+
+        }
+
+
+        /* =====================================================
+           SOUND BUTTON
+        ===================================================== */
+
+        .sound-button {
+
+            background:
+                rgba(70,0,0,0.60) !important;
+
+            border:
+                1px solid rgba(255,50,20,0.35) !important;
+
+        }
+
+
+        /* =====================================================
+           WRONG LETTERS
+        ===================================================== */
+
+        .wrong-text {
+
+            color:
+                #ff725c !important;
+
+        }
+
+
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
+
+        .message {
+
+            color:
+                #ffb09e !important;
+
+        }
+
+
+        /* =====================================================
+           HINT
+        ===================================================== */
+
+        .hint {
+
+            color:
+                #ff8c73 !important;
+
+        }
+
+
+        /* =====================================================
+           INTRO BLACKOUT
+        ===================================================== */
+
+        #logoBlackout {
+
+            position: fixed;
+
+            inset: 0;
+
+            width: 100vw;
+            height: 100vh;
+
+            background:
+                #000000;
+
+            z-index: 999990;
+
+            opacity: 1;
+
+            pointer-events: all;
+
+            transition:
+                opacity 900ms ease;
+
+        }
+
+
+        #logoBlackout.reveal {
+
+            opacity: 0;
+
+            pointer-events: none;
+
+        }
+
+
+        /* =====================================================
+           DURING LOGO ANIMATION
+        ===================================================== */
+
+        html.logo-opening {
+
+            overflow: hidden !important;
+
+        }
+
+
+        html.logo-opening body {
+
+            overflow: hidden !important;
+
+        }
+
+
+        html.logo-opening .container {
+
+            opacity: 0;
+
+        }
+
+
+        html.logo-opening #gameVideoBackground {
+
+            opacity: 0;
+
+        }
+
+
+        html.logo-opening #videoOverlay {
+
+            opacity: 0;
+
+        }
+
+
+        /* =====================================================
+           REVEAL INTERFACE
+        ===================================================== */
+
+        .container {
+
+            transition:
+                opacity 900ms ease;
+
+        }
+
+
+        #gameVideoBackground {
+
+            transition:
+                opacity 900ms ease;
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            #gameVideoBackground {
+
+                object-position: center center;
+
+                filter:
+                    brightness(0.68)
+                    contrast(1.16)
+                    saturate(1.2);
+
+            }
+
+            .welcome-box,
+            .box,
+            .game-card,
+            .complete-box {
+
+                backdrop-filter: blur(4px);
+
+                -webkit-backdrop-filter: blur(4px);
+
+            }
+
+        }
+
+    </style>
+
     <script src="script.js" defer></script>
+
 </head>
+
 
 <body>
 
+
+    <!-- =====================================================
+         VIDEO BACKGROUND
+    ===================================================== -->
+
+    <video
+        id="gameVideoBackground"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        aria-hidden="true">
+
+        <source
+            src="./assets/video.mp4"
+            type="video/mp4">
+
+    </video>
+
+
+    <!-- =====================================================
+         VIDEO OVERLAY
+    ===================================================== -->
+
+    <div id="videoOverlay"></div>
+
+
+    <!-- =====================================================
+         BLACK INTRO SCREEN
+    ===================================================== -->
+
+    <div id="logoBlackout"></div>
+
+
+    <!-- =====================================================
+         MAIN GAME
+    ===================================================== -->
+
     <main class="container">
 
-        <!-- Welcome Screen -->
-        <section id="welcomeScreen" class="screen active">
+
+        <!-- =================================================
+             WELCOME
+        ================================================= -->
+
+        <section
+            id="welcomeScreen"
+            class="screen active">
 
             <div class="welcome-box">
 
                 <img
-                    src="assets/design.jpg"
+                    src="./assets/hangman-logo.png"
                     alt="Hangman Game"
                     class="logo-image"
                 >
 
-                <h1>HANGMAN GAME</h1>
+                <h1>
+                    HANGMAN GAME
+                </h1>
 
                 <p>
                     Learn OOP concepts while playing Hangman.
                 </p>
 
-                <button id="startButton" class="main-button">
+                <button
+                    id="startButton"
+                    class="main-button">
+
                     START GAME
+
                 </button>
 
-                <button id="howToPlayButton" class="small-button">
+                <button
+                    id="howToPlayButton"
+                    class="small-button">
+
                     HOW TO PLAY
+
                 </button>
 
             </div>
@@ -44,29 +731,50 @@
         </section>
 
 
-        <!-- Device Screen -->
-        <section id="deviceScreen" class="screen">
+        <!-- =================================================
+             DEVICE
+        ================================================= -->
+
+        <section
+            id="deviceScreen"
+            class="screen">
 
             <div class="box">
 
-                <h2>Select Your Device</h2>
+                <h2>
+                    Select Your Device
+                </h2>
 
-                <p>Choose the device you are using.</p>
+                <p>
+                    Choose the device you are using.
+                </p>
 
                 <div class="button-group">
 
-                    <button id="laptopButton" class="device-button">
+                    <button
+                        id="laptopButton"
+                        class="device-button">
+
                         💻 Laptop
+
                     </button>
 
-                    <button id="mobileButton" class="device-button">
+                    <button
+                        id="mobileButton"
+                        class="device-button">
+
                         📱 Mobile
+
                     </button>
 
                 </div>
 
-                <button id="deviceBackButton" class="small-button">
+                <button
+                    id="deviceBackButton"
+                    class="small-button">
+
                     BACK
+
                 </button>
 
             </div>
@@ -74,36 +782,76 @@
         </section>
 
 
-        <!-- Mode Screen -->
-        <section id="modeScreen" class="screen">
+        <!-- =================================================
+             MODE
+        ================================================= -->
+
+        <section
+            id="modeScreen"
+            class="screen">
 
             <div class="box">
 
-                <h2>Select Game Mode</h2>
+                <h2>
+                    Select Game Mode
+                </h2>
 
-                <p>Every level has five OOP questions.</p>
+                <p>
+                    Every level has five OOP questions.
+                </p>
 
                 <div class="mode-group">
 
-                    <button id="peacefulButton" class="mode-button peaceful">
-                        <b>Peaceful Mode</b>
-                        <span>No lives are lost. Practice freely.</span>
+                    <button
+                        id="peacefulButton"
+                        class="mode-button peaceful">
+
+                        <b>
+                            Peaceful Mode
+                        </b>
+
+                        <span>
+                            No lives are lost. Practice freely.
+                        </span>
+
                     </button>
 
-                    <button id="easyButton" class="mode-button easy">
-                        <b>Easy Mode</b>
-                        <span>Six lives and simple questions.</span>
+                    <button
+                        id="easyButton"
+                        class="mode-button easy">
+
+                        <b>
+                            Easy Mode
+                        </b>
+
+                        <span>
+                            Six lives and simple questions.
+                        </span>
+
                     </button>
 
-                    <button id="hardButton" class="mode-button hard">
-                        <b>Hard Mode</b>
-                        <span>Four lives and harder questions.</span>
+                    <button
+                        id="hardButton"
+                        class="mode-button hard">
+
+                        <b>
+                            Hard Mode
+                        </b>
+
+                        <span>
+                            Four lives and harder questions.
+                        </span>
+
                     </button>
 
                 </div>
 
-                <button id="modeBackButton" class="small-button">
+                <button
+                    id="modeBackButton"
+                    class="small-button">
+
                     BACK
+
                 </button>
 
             </div>
@@ -111,83 +859,137 @@
         </section>
 
 
-        <!-- Game Screen -->
-        <section id="gameScreen" class="screen">
+        <!-- =================================================
+             GAME
+        ================================================= -->
+
+        <section
+            id="gameScreen"
+            class="screen">
 
             <div class="game-content">
 
                 <header class="game-header">
 
                     <div>
-                        <p id="modeName">EASY MODE</p>
-                        <h2 id="levelText">Level 1</h2>
+
+                        <p id="modeName">
+                            EASY MODE
+                        </p>
+
+                        <h2 id="levelText">
+                            Level 1
+                        </h2>
+
                     </div>
 
                     <div class="stats">
 
                         <span>
-                            Question: <b id="questionNumber">1/5</b>
+                            Question:
+                            <b id="questionNumber">
+                                1/5
+                            </b>
                         </span>
 
                         <span>
-                            ❤️ Lives: <b id="lives">6</b>
+                            ❤️ Lives:
+                            <b id="lives">
+                                6
+                            </b>
                         </span>
 
                         <span>
-                            ⭐ Score: <b id="score">0</b>
+                            ⭐ Score:
+                            <b id="score">
+                                0
+                            </b>
                         </span>
 
-                        <button id="soundButton" class="sound-button">
+                        <button
+                            id="soundButton"
+                            class="sound-button">
+
                             🔊
+
                         </button>
 
                     </div>
 
                 </header>
 
+
                 <div class="progress-bar">
+
                     <div id="progress"></div>
+
                 </div>
+
 
                 <div class="game-area">
 
-                    <!-- Hangman -->
+
+                    <!-- HANGMAN -->
+
                     <div class="game-card">
 
                         <canvas
                             id="hangmanCanvas"
                             width="260"
-                            height="260"
-                        ></canvas>
+                            height="260">
+                        </canvas>
 
-                        <p id="message" class="message">
+                        <p
+                            id="message"
+                            class="message">
+
                             Type one letter or the complete answer.
+
                         </p>
 
                         <p class="wrong-text">
-                            Wrong: <span id="wrongLetters">None</span>
+
+                            Wrong:
+                            <span id="wrongLetters">
+                                None
+                            </span>
+
                         </p>
 
                     </div>
 
 
-                    <!-- Question -->
-                    <div class="game-card question-card">
+                    <!-- QUESTION -->
 
-                        <span id="category" class="category">
+                    <div
+                        class="game-card question-card">
+
+                        <span
+                            id="category"
+                            class="category">
+
                             OOP
+
                         </span>
 
                         <h3 id="question">
+
                             Loading question...
+
                         </h3>
 
-                        <div id="answerDisplay" class="answer-display">
+                        <div
+                            id="answerDisplay"
+                            class="answer-display">
+
                             _ _ _ _ _
+
                         </div>
 
                         <label for="guessInput">
+
                             Enter one letter or complete answer:
+
                         </label>
 
                         <div class="input-area">
@@ -199,16 +1001,27 @@
                                 autocomplete="off"
                             >
 
-                            <button id="guessButton" class="main-button">
+                            <button
+                                id="guessButton"
+                                class="main-button">
+
                                 GUESS
+
                             </button>
 
                         </div>
 
-                        <p id="hint" class="hint"></p>
+                        <p
+                            id="hint"
+                            class="hint">
+                        </p>
 
-                        <button id="menuButton" class="small-button">
+                        <button
+                            id="menuButton"
+                            class="small-button">
+
                             SAVE AND RETURN TO MENU
+
                         </button>
 
                     </div>
@@ -220,29 +1033,44 @@
         </section>
 
 
-        <!-- Level Complete Screen -->
-        <section id="completeScreen" class="screen">
+        <!-- =================================================
+             COMPLETE
+        ================================================= -->
+
+        <section
+            id="completeScreen"
+            class="screen">
 
             <div class="complete-box">
 
                 <img
-                    src="assets/game-complete.jpg"
+                    src="./assets/game-complete.jpg"
                     alt="Level Complete"
                     class="complete-image"
                 >
 
-                <h2 id="completeTitle">Level Complete!</h2>
+                <h2 id="completeTitle">
+                    Level Complete!
+                </h2>
 
                 <p id="completeMessage">
                     Next level is unlocked.
                 </p>
 
-                <button id="nextLevelButton" class="main-button">
+                <button
+                    id="nextLevelButton"
+                    class="main-button">
+
                     NEXT LEVEL
+
                 </button>
 
-                <button id="completeMenuButton" class="small-button">
+                <button
+                    id="completeMenuButton"
+                    class="small-button">
+
                     MAIN MENU
+
                 </button>
 
             </div>
@@ -250,23 +1078,55 @@
         </section>
 
 
-        <!-- Instructions Screen -->
-        <section id="instructionScreen" class="screen">
+        <!-- =================================================
+             INSTRUCTIONS
+        ================================================= -->
 
-            <div class="box instructions">
+        <section
+            id="instructionScreen"
+            class="screen">
 
-                <h2>How To Play</h2>
+            <div
+                class="box instructions">
 
-                <p>1. First select Laptop or Mobile.</p>
-                <p>2. Select Peaceful, Easy, or Hard mode.</p>
-                <p>3. Level 1 starts automatically.</p>
-                <p>4. Every level contains five questions.</p>
-                <p>5. Type one letter or type the complete answer.</p>
-                <p>6. Completing a level unlocks the next level.</p>
-                <p>7. Your unlocked level is saved automatically.</p>
+                <h2>
+                    How To Play
+                </h2>
 
-                <button id="instructionBackButton" class="main-button">
+                <p>
+                    1. First select Laptop or Mobile.
+                </p>
+
+                <p>
+                    2. Select Peaceful, Easy, or Hard mode.
+                </p>
+
+                <p>
+                    3. Level 1 starts automatically.
+                </p>
+
+                <p>
+                    4. Every level contains five questions.
+                </p>
+
+                <p>
+                    5. Type one letter or type the complete answer.
+                </p>
+
+                <p>
+                    6. Completing a level unlocks the next level.
+                </p>
+
+                <p>
+                    7. Your unlocked level is saved automatically.
+                </p>
+
+                <button
+                    id="instructionBackButton"
+                    class="main-button">
+
                     GOT IT
+
                 </button>
 
             </div>
@@ -275,5 +1135,48 @@
 
     </main>
 
+
+    <!-- =====================================================
+         VIDEO AUTOPLAY
+    ===================================================== -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const video =
+                document.getElementById("gameVideoBackground");
+
+            if (!video) return;
+
+            video.muted = true;
+            video.loop = true;
+            video.playsInline = true;
+
+            function startVideo() {
+
+                video.play().catch(function () {
+
+                    console.log(
+                        "Video autoplay waiting for browser permission."
+                    );
+
+                });
+
+            }
+
+            startVideo();
+
+            window.addEventListener(
+                "load",
+                startVideo
+            );
+
+        });
+
+    </script>
+
+
 </body>
+
 </html>
