@@ -1,272 +1,479 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hangman Game | Samarth</title>
-<link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hangman Game | Samarth</title>
+
+    <!-- GitHub Pages compatible CSS path -->
+    <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
 
-<video id="gameVideoBackground" autoplay muted loop playsinline preload="auto">
-    <source src="/assets/VIDEO.mp4" type="video/mp4">
-</video>
+    <!-- VIDEO BACKGROUND -->
+    <video
+        id="gameVideoBackground"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto">
 
-<div id="videoOverlay"></div>
+        <source src="./assets/VIDEO.mp4" type="video/mp4">
+    </video>
 
-<div id="blackout">
-    <img id="introLogo" src="/assets/hangman-logo.png" alt="Hangman">
-</div>
+    <div id="videoOverlay"></div>
 
-<div class="container">
+    <!-- INTRO LOGO -->
+    <div id="blackout">
+        <img
+            id="introLogo"
+            src="./assets/hangman-logo.png"
+            alt="Hangman">
+    </div>
 
-    <!-- WELCOME -->
-    <section id="welcomeScreen" class="screen active">
-        <img class="side-game-logo" src="/assets/hangman-logo.png" alt="Logo">
+    <div class="container">
 
-        <div class="welcome-card glass">
-            <img class="main-logo" src="/assets/hangman-logo.png" alt="Hangman Game">
+        <!-- WELCOME SCREEN -->
+        <section id="welcomeScreen" class="screen active">
 
-            <div class="brand">
-                HANGMAN <span>GAME</span>
-            </div>
+            <img
+                class="side-game-logo"
+                src="./assets/hangman-logo.png"
+                alt="Logo">
 
-            <div class="tagline">
-                Learn OOP concepts while playing Hangman.
-            </div>
+            <div class="welcome-card glass">
 
-            <div class="buttons">
-                <button class="primary-btn" id="startButton">▶ START GAME</button>
-                <button class="secondary-btn" id="howToPlayButton">☠ HOW TO PLAY</button>
-            </div>
-        </div>
-    </section>
+                <img
+                    class="main-logo"
+                    src="./assets/hangman-logo.png"
+                    alt="Hangman Game">
 
-    <!-- PLAYER -->
-    <section id="playerScreen" class="screen">
-        <img class="side-game-logo" src="/assets/hangman-logo.png" alt="Logo">
-
-        <div class="player-card glass">
-            <h1>PLAYER PROFILE</h1>
-            <p class="panel-subtitle">Enter your name to continue.</p>
-
-            <input id="playerNameInput"
-                   type="text"
-                   maxlength="25"
-                   autocomplete="off"
-                   placeholder="Enter player name">
-
-            <div class="buttons">
-                <button class="primary-btn" id="playerContinueButton">CONTINUE →</button>
-                <button class="secondary-btn" id="playerBackButton">← BACK</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- DEVICE -->
-    <section id="deviceScreen" class="screen">
-        <img class="side-game-logo" src="/assets/hangman-logo.png" alt="Logo">
-
-        <div class="panel glass">
-            <h1>SELECT DEVICE</h1>
-            <p class="panel-subtitle">Choose the layout you want to play with.</p>
-
-            <div class="option-grid">
-                <button class="device-btn" id="laptopButton">
-                    <span class="option-title">💻 Laptop / Desktop</span>
-                    <span class="option-text">Wide game layout with large hangman area.</span>
-                </button>
-
-                <button class="device-btn" id="mobileButton">
-                    <span class="option-title">📱 Mobile</span>
-                    <span class="option-text">Compact one-column game layout.</span>
-                </button>
-            </div>
-
-            <div class="buttons">
-                <button class="secondary-btn" id="deviceBackButton">← BACK</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- MODE -->
-    <section id="modeScreen" class="screen">
-        <img class="side-game-logo" src="/assets/hangman-logo.png" alt="Logo">
-
-        <div class="panel glass">
-            <h1>SELECT MODE</h1>
-            <p class="panel-subtitle">Choose your difficulty.</p>
-
-            <div class="option-grid">
-                <button class="mode-btn" id="peacefulButton">
-                    <span class="option-title">🕊 PEACEFUL</span>
-                    <span class="option-text">No lives are lost. Relax and learn OOP.</span>
-                </button>
-
-                <button class="mode-btn" id="easyButton">
-                    <span class="option-title">🩸 EASY</span>
-                    <span class="option-text">6 lives • beginner-friendly OOP questions.</span>
-                </button>
-
-                <button class="mode-btn" id="hardButton">
-                    <span class="option-title">☠ HARD</span>
-                    <span class="option-text">4 lives • advanced OOP challenge.</span>
-                </button>
-            </div>
-
-            <div class="buttons">
-                <button class="secondary-btn" id="modeBackButton">← BACK</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- LEVEL SELECT -->
-    <section id="levelScreen" class="screen">
-        <img class="side-game-logo" src="/assets/hangman-logo.png" alt="Logo">
-
-        <div class="level-panel glass">
-            <h1 id="levelTitle">SELECT LEVEL</h1>
-            <p class="panel-subtitle" id="levelSubtitle">
-                Choose an unlocked level.
-            </p>
-
-            <div id="levelGrid" class="level-grid"></div>
-
-            <div class="level-actions">
-                <button class="secondary-btn" id="levelMenuButton">MAIN MENU</button>
-                <button class="secondary-btn" id="changePlayerButton">CHANGE PLAYER</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- GAME -->
-    <section id="gameScreen" class="screen">
-        <img class="side-game-logo" src="/assets/hangman-logo.png" alt="Logo">
-
-        <div class="game-content">
-            <div class="game-header">
-                <div>
-                    <div class="game-title">
-                        HANGMAN <span>GAME</span>
-                    </div>
-                    <div id="modeName" class="panel-subtitle">Easy</div>
+                <div class="brand">
+                    HANGMAN <span>GAME</span>
                 </div>
 
-                <div class="game-meta">
-                    <div class="stat">
-                        <small>Level</small>
-                        <b id="levelText">1 / 20</b>
-                    </div>
-
-                    <div class="stat">
-                        <small>Question</small>
-                        <b id="questionNumber">1 / 5</b>
-                    </div>
-
-                    <div class="stat">
-                        <small>Lives</small>
-                        <b id="lives">6</b>
-                    </div>
-
-                    <div class="stat">
-                        <small>Score</small>
-                        <b id="score">0</b>
-                    </div>
-                </div>
-            </div>
-
-            <div class="progress-wrap">
-                <div id="progress"></div>
-            </div>
-
-            <div class="game-area">
-
-                <div class="game-card hangman-card">
-                    <canvas id="hangmanCanvas" width="330" height="330"></canvas>
-
-                    <div id="message" class="message"></div>
-
-                    <div class="wrong-title">Wrong Letters</div>
-                    <div id="wrongLetters">—</div>
+                <div class="tagline">
+                    Learn OOP concepts while playing Hangman.
                 </div>
 
-                <div class="game-card question-card">
+                <div class="buttons">
+                    <button class="primary-btn" id="startButton">
+                        ▶ START GAME
+                    </button>
 
-                    <div id="category" class="category">OOP</div>
-
-                    <div id="question">
-                        Loading question...
-                    </div>
-
-                    <div id="answerDisplay">_ _ _ _</div>
-
-                    <div class="input-area">
-                        <input id="guessInput"
-                               maxlength="40"
-                               autocomplete="off"
-                               placeholder="Enter a letter or complete answer">
-
-                        <button id="guessButton">GUESS</button>
-                    </div>
-
-                    <div id="hint" class="hint">
-                        Hint will appear here.
-                    </div>
-
-                    <div class="game-bottom">
-                        <button class="secondary-btn" id="soundButton">🔊 SOUND</button>
-                        <button class="secondary-btn" id="menuButton">MENU</button>
-                    </div>
+                    <button class="secondary-btn" id="howToPlayButton">
+                        ☠ HOW TO PLAY
+                    </button>
                 </div>
 
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- COMPLETE -->
-    <section id="completeScreen" class="screen">
-        <img class="side-game-logo" src="/assets/hangman-logo.png" alt="Logo">
+        <!-- PLAYER PROFILE -->
+        <section id="playerScreen" class="screen">
 
-        <div class="complete-card glass">
-            <img src="/assets/game-complete.jpg" alt="Complete">
+            <img
+                class="side-game-logo"
+                src="./assets/hangman-logo.png"
+                alt="Logo">
 
-            <h1 id="completeTitle">LEVEL COMPLETE</h1>
-            <p id="completeText">Great work!</p>
+            <div class="player-card glass">
 
-            <div class="buttons">
-                <button class="primary-btn" id="continueLevelButton">LEVEL SELECT →</button>
-                <button class="secondary-btn" id="completeMenuButton">MAIN MENU</button>
+                <h1>PLAYER PROFILE</h1>
+
+                <p class="panel-subtitle">
+                    Enter your name to continue.
+                </p>
+
+                <input
+                    id="playerNameInput"
+                    type="text"
+                    maxlength="25"
+                    autocomplete="off"
+                    placeholder="Enter player name">
+
+                <div class="buttons">
+
+                    <button class="primary-btn" id="playerContinueButton">
+                        CONTINUE →
+                    </button>
+
+                    <button class="secondary-btn" id="playerBackButton">
+                        ← BACK
+                    </button>
+
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- INSTRUCTIONS -->
-    <section id="instructionScreen" class="screen">
-        <img class="side-game-logo" src="/assets/hangman-logo.png" alt="Logo">
+        <!-- DEVICE SELECTION -->
+        <section id="deviceScreen" class="screen">
 
-        <div class="panel glass">
-            <h1>HOW TO PLAY</h1>
+            <img
+                class="side-game-logo"
+                src="./assets/hangman-logo.png"
+                alt="Logo">
 
-            <div style="margin-top:25px;line-height:1.8;color:#bbb">
-                <p>🎯 Guess the hidden OOP/C++ answer.</p>
-                <p>⌨️ Enter one letter or the complete answer.</p>
-                <p>❤️ Easy gives 6 lives.</p>
-                <p>☠ Hard gives 4 lives.</p>
-                <p>🕊 Peaceful does not remove lives.</p>
-                <p>⭐ Correct letter = +5 points.</p>
-                <p>🔥 Complete answer = +20 points.</p>
-                <p>🏆 Each level contains 5 questions.</p>
-                <p>🔓 Complete a level to unlock the next level.</p>
+            <div class="panel glass">
+
+                <h1>SELECT DEVICE</h1>
+
+                <p class="panel-subtitle">
+                    Choose the layout you want to play with.
+                </p>
+
+                <div class="option-grid">
+
+                    <button class="device-btn" id="laptopButton">
+                        <span class="option-title">
+                            💻 Laptop / Desktop
+                        </span>
+
+                        <span class="option-text">
+                            Wide game layout with large hangman area.
+                        </span>
+                    </button>
+
+                    <button class="device-btn" id="mobileButton">
+                        <span class="option-title">
+                            📱 Mobile
+                        </span>
+
+                        <span class="option-text">
+                            Compact one-column game layout.
+                        </span>
+                    </button>
+
+                </div>
+
+                <div class="buttons">
+                    <button class="secondary-btn" id="deviceBackButton">
+                        ← BACK
+                    </button>
+                </div>
+
             </div>
+        </section>
 
-            <div class="buttons">
-                <button class="secondary-btn" id="instructionBackButton">← BACK</button>
+        <!-- MODE SELECTION -->
+        <section id="modeScreen" class="screen">
+
+            <img
+                class="side-game-logo"
+                src="./assets/hangman-logo.png"
+                alt="Logo">
+
+            <div class="panel glass">
+
+                <h1>SELECT MODE</h1>
+
+                <p class="panel-subtitle">
+                    Choose your difficulty.
+                </p>
+
+                <div class="option-grid">
+
+                    <button class="mode-btn" id="peacefulButton">
+                        <span class="option-title">
+                            🕊 PEACEFUL
+                        </span>
+
+                        <span class="option-text">
+                            No lives are lost. Relax and learn OOP.
+                        </span>
+                    </button>
+
+                    <button class="mode-btn" id="easyButton">
+                        <span class="option-title">
+                            🩸 EASY
+                        </span>
+
+                        <span class="option-text">
+                            6 lives • beginner-friendly OOP questions.
+                        </span>
+                    </button>
+
+                    <button class="mode-btn" id="hardButton">
+                        <span class="option-title">
+                            ☠ HARD
+                        </span>
+
+                        <span class="option-text">
+                            4 lives • advanced OOP challenge.
+                        </span>
+                    </button>
+
+                </div>
+
+                <div class="buttons">
+                    <button class="secondary-btn" id="modeBackButton">
+                        ← BACK
+                    </button>
+                </div>
+
             </div>
-        </div>
-    </section>
+        </section>
 
-</div>
+        <!-- LEVEL SELECTION -->
+        <section id="levelScreen" class="screen">
 
-<script src="/script.js"></script>
+            <img
+                class="side-game-logo"
+                src="./assets/hangman-logo.png"
+                alt="Logo">
+
+            <div class="level-panel glass">
+
+                <h1 id="levelTitle">
+                    SELECT LEVEL
+                </h1>
+
+                <p class="panel-subtitle" id="levelSubtitle">
+                    Choose an unlocked level.
+                </p>
+
+                <div id="levelGrid" class="level-grid"></div>
+
+                <div class="level-actions">
+
+                    <button
+                        class="secondary-btn"
+                        id="levelMenuButton">
+                        MAIN MENU
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        id="changePlayerButton">
+                        CHANGE PLAYER
+                    </button>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- GAME SCREEN -->
+        <section id="gameScreen" class="screen">
+
+            <img
+                class="side-game-logo"
+                src="./assets/hangman-logo.png"
+                alt="Logo">
+
+            <div class="game-content">
+
+                <!-- GAME HEADER -->
+                <div class="game-header">
+
+                    <div>
+                        <div class="game-title">
+                            HANGMAN <span>GAME</span>
+                        </div>
+
+                        <div id="modeName" class="panel-subtitle">
+                            Easy
+                        </div>
+                    </div>
+
+                    <!-- GAME STATS -->
+                    <div class="game-meta">
+
+                        <div class="stat">
+                            <small>Level</small>
+                            <b id="levelText">1 / 20</b>
+                        </div>
+
+                        <div class="stat">
+                            <small>Question</small>
+                            <b id="questionNumber">1 / 5</b>
+                        </div>
+
+                        <div class="stat">
+                            <small>Lives</small>
+                            <b id="lives">6</b>
+                        </div>
+
+                        <div class="stat">
+                            <small>Score</small>
+                            <b id="score">0</b>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- PROGRESS BAR -->
+                <div class="progress-wrap">
+                    <div id="progress"></div>
+                </div>
+
+                <!-- GAME AREA -->
+                <div class="game-area">
+
+                    <!-- HANGMAN -->
+                    <div class="game-card hangman-card">
+
+                        <canvas
+                            id="hangmanCanvas"
+                            width="330"
+                            height="330">
+                        </canvas>
+
+                        <div id="message" class="message"></div>
+
+                        <div class="wrong-title">
+                            Wrong Letters
+                        </div>
+
+                        <div id="wrongLetters">—</div>
+
+                    </div>
+
+                    <!-- QUESTION -->
+                    <div class="game-card question-card">
+
+                        <div id="category" class="category">
+                            OOP
+                        </div>
+
+                        <div id="question">
+                            Loading question...
+                        </div>
+
+                        <div id="answerDisplay">
+                            _ _ _ _
+                        </div>
+
+                        <!-- GUESS INPUT -->
+                        <div class="input-area">
+
+                            <input
+                                id="guessInput"
+                                type="text"
+                                maxlength="40"
+                                autocomplete="off"
+                                placeholder="Enter a letter or complete answer">
+
+                            <button id="guessButton">
+                                GUESS
+                            </button>
+
+                        </div>
+
+                        <!-- HINT -->
+                        <div id="hint" class="hint">
+                            Hint will appear here.
+                        </div>
+
+                        <!-- GAME CONTROLS -->
+                        <div class="game-bottom">
+
+                            <button
+                                class="secondary-btn"
+                                id="soundButton">
+                                🔊 SOUND
+                            </button>
+
+                            <button
+                                class="secondary-btn"
+                                id="menuButton">
+                                MENU
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- LEVEL COMPLETE -->
+        <section id="completeScreen" class="screen">
+
+            <img
+                class="side-game-logo"
+                src="./assets/hangman-logo.png"
+                alt="Logo">
+
+            <div class="complete-card glass">
+
+                <img
+                    src="./assets/game-complete.jpg"
+                    alt="Complete">
+
+                <h1 id="completeTitle">
+                    LEVEL COMPLETE
+                </h1>
+
+                <p id="completeText">
+                    Great work!
+                </p>
+
+                <div class="buttons">
+
+                    <button
+                        class="primary-btn"
+                        id="continueLevelButton">
+                        LEVEL SELECT →
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        id="completeMenuButton">
+                        MAIN MENU
+                    </button>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- HOW TO PLAY -->
+        <section id="instructionScreen" class="screen">
+
+            <img
+                class="side-game-logo"
+                src="./assets/hangman-logo.png"
+                alt="Logo">
+
+            <div class="panel glass">
+
+                <h1>HOW TO PLAY</h1>
+
+                <div style="margin-top:25px;line-height:1.8;color:#bbb">
+
+                    <p>🎯 Guess the hidden OOP/C++ answer.</p>
+                    <p>⌨️ Enter one letter or the complete answer.</p>
+                    <p>❤️ Easy gives 6 lives.</p>
+                    <p>☠ Hard gives 4 lives.</p>
+                    <p>🕊 Peaceful does not remove lives.</p>
+                    <p>⭐ Correct letter = +5 points.</p>
+                    <p>🔥 Complete answer = +20 points.</p>
+                    <p>🏆 Each level contains 5 questions.</p>
+                    <p>🔓 Complete a level to unlock the next level.</p>
+
+                </div>
+
+                <div class="buttons">
+                    <button
+                        class="secondary-btn"
+                        id="instructionBackButton">
+                        ← BACK
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+    <!-- GitHub Pages compatible JavaScript path -->
+    <script src="./script.js"></script>
+
 </body>
 </html>
