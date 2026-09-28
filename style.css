@@ -1,2358 +1,570 @@
-/* =========================================================
-   HANGMAN GAME
-   RED / BLACK VIDEO THEME
-   COMPLETE STYLE SHEET
-   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-
-/* =========================================================
-   BODY
-========================================================= */
-
-html,
-body {
-    width: 100%;
-    min-height: 100%;
+:root{
+    --red:#ff1744;
+    --red2:#ff3d68;
+    --dark:#050505;
+    --panel:rgba(12,12,15,.74);
+    --border:rgba(255,255,255,.10);
+    --muted:#a7a7b2;
+    --white:#ffffff;
 }
 
-body {
-    min-height: 100vh;
-
-    font-family: Arial, sans-serif;
-
-    color: #ffffff;
-
-    background: #030000;
-
-    overflow-x: hidden;
+html,body{
+    width:100%;
+    min-height:100%;
+    background:#000;
+    color:#fff;
+    font-family:Inter,Arial,sans-serif;
 }
 
-
-/* =========================================================
-   VIDEO BACKGROUND
-========================================================= */
-
-#gameVideoBackground {
-    position: fixed;
-
-    inset: 0;
-
-    width: 100vw;
-    height: 100vh;
-
-    object-fit: cover;
-
-    z-index: 0;
-
-    pointer-events: none;
-
-    background: #030000;
-
-    filter:
-        brightness(0.72)
-        contrast(1.18)
-        saturate(1.25);
-
-    transition:
-        opacity 0.9s ease;
+body{
+    overflow-x:hidden;
 }
 
+#gameVideoBackground{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:0;
+    filter:brightness(.28) contrast(1.15) saturate(.85);
+    background:#000;
+}
 
-/* =========================================================
-   VIDEO OVERLAY
-========================================================= */
-
-#videoOverlay {
-    position: fixed;
-
-    inset: 0;
-
-    width: 100vw;
-    height: 100vh;
-
-    z-index: 1;
-
-    pointer-events: none;
-
+#videoOverlay{
+    position:fixed;
+    inset:0;
     background:
-        linear-gradient(
-            180deg,
-            rgba(0, 0, 0, 0.25),
-            rgba(0, 0, 0, 0.48)
-        ),
-        radial-gradient(
-            circle at center,
-            rgba(255, 30, 0, 0.08),
-            rgba(0, 0, 0, 0.60)
-        );
-
-    transition:
-        opacity 0.9s ease;
+        radial-gradient(circle at 50% 35%,rgba(255,0,45,.10),transparent 35%),
+        linear-gradient(180deg,rgba(0,0,0,.30),rgba(0,0,0,.88));
+    z-index:1;
+    pointer-events:none;
 }
-
-
-/* =========================================================
-   BLACK INTRO SCREEN
-========================================================= */
-
-#logoBlackout {
-    position: fixed;
-
-    inset: 0;
-
-    width: 100vw;
-    height: 100vh;
-
-    background: #000000;
-
-    z-index: 999990;
 
-    opacity: 1;
-
-    pointer-events: all;
-
-    transition:
-        opacity 0.9s ease;
+#blackout{
+    position:fixed;
+    inset:0;
+    background:#000;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:opacity .8s ease;
 }
 
-#logoBlackout.reveal {
-    opacity: 0;
-
-    pointer-events: none;
+#blackout.hidden{
+    opacity:0;
+    pointer-events:none;
 }
-
-
-/* =========================================================
-   MAIN CONTAINER
-========================================================= */
-
-.container {
-    position: relative;
-
-    z-index: 2;
-
-    min-height: 100vh;
 
-    width: 100%;
-
-    padding: 25px;
-
-    background: transparent;
-
-    transition:
-        opacity 0.9s ease;
+#introLogo{
+    width:min(240px,55vw);
+    max-height:240px;
+    object-fit:contain;
+    filter:drop-shadow(0 0 30px rgba(255,0,50,.45));
+    animation:introPop 1.25s ease forwards;
 }
-
-
-/* =========================================================
-   SCREEN SYSTEM
-========================================================= */
-
-.screen {
-    display: none;
-
-    min-height: 90vh;
-
-    justify-content: center;
 
-    align-items: center;
-
-    position: relative;
-
-    z-index: 5;
-
-    background: transparent !important;
-
-    animation:
-        fadeIn 0.5s ease;
+@keyframes introPop{
+    0%{transform:scale(.35);opacity:0}
+    55%{transform:scale(1.08);opacity:1}
+    100%{transform:scale(1);opacity:1}
 }
 
-.screen.active {
-    display: flex;
+.container{
+    position:relative;
+    z-index:5;
+    width:100%;
+    min-height:100vh;
+    padding:28px;
 }
-
-
-@keyframes fadeIn {
-
-    from {
-        opacity: 0;
-
-        transform:
-            scale(0.97)
-            translateY(8px);
-    }
 
-    to {
-        opacity: 1;
-
-        transform:
-            scale(1)
-            translateY(0);
-    }
-
+.screen{
+    min-height:calc(100vh - 56px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    position:relative;
 }
-
-
-/* =========================================================
-   INTRO LOGO STATE
-========================================================= */
 
-html.logo-opening,
-html.logo-opening body {
-    overflow: hidden !important;
+.screen.active{
+    display:flex;
 }
 
-html.logo-opening .container {
-    opacity: 0;
+.side-game-logo{
+    position:absolute;
+    top:18px;
+    left:18px;
+    width:82px;
+    height:82px;
+    object-fit:contain;
+    border-radius:50%;
+    z-index:20;
+    filter:drop-shadow(0 0 15px rgba(255,0,55,.35));
 }
 
-html.logo-opening #gameVideoBackground {
-    opacity: 0;
+.glass{
+    background:rgba(5,5,8,.67);
+    border:1px solid var(--border);
+    box-shadow:0 25px 80px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.04);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
 }
 
-html.logo-opening #videoOverlay {
-    opacity: 0;
+.welcome-card{
+    width:min(920px,95vw);
+    text-align:center;
+    padding:55px 35px;
+    border-radius:28px;
 }
-
-
-/* =========================================================
-   COMMON GLASS BOX
-========================================================= */
-
-.box,
-.welcome-box,
-.complete-box,
-.game-card {
-
-    position: relative;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(28, 3, 2, 0.72),
-            rgba(3, 0, 0, 0.55)
-        );
-
-    border:
-        1px solid rgba(255, 55, 25, 0.45);
-
-    border-radius: 20px;
-
-    box-shadow:
-
-        0 0 15px
-        rgba(255, 35, 10, 0.12),
-
-        0 0 35px
-        rgba(150, 0, 0, 0.14),
-
-        inset 0 0 30px
-        rgba(255, 30, 0, 0.025);
-
-    backdrop-filter:
-        blur(5px);
 
-    -webkit-backdrop-filter:
-        blur(5px);
+.main-logo{
+    width:min(270px,62vw);
+    max-height:270px;
+    object-fit:contain;
+    filter:drop-shadow(0 0 28px rgba(255,0,55,.34));
 }
 
-
-/* =========================================================
-   BOX RED EDGE
-========================================================= */
-
-.box::before,
-.welcome-box::before,
-.complete-box::before,
-.game-card::before {
-
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    border-radius: inherit;
-
-    pointer-events: none;
-
-    background:
-        linear-gradient(
-            120deg,
-            rgba(255, 70, 35, 0.10),
-            transparent 35%,
-            transparent 65%,
-            rgba(180, 0, 0, 0.08)
-        );
+.brand{
+    margin-top:18px;
+    font-family:"Space Grotesk",Inter,sans-serif;
+    font-size:clamp(36px,6vw,72px);
+    font-weight:800;
+    letter-spacing:-2px;
 }
 
-
-/* =========================================================
-   NORMAL BOX
-========================================================= */
-
-.box {
-
-    width:
-        min(700px, 95%);
-
-    padding:
-        35px;
-
-    text-align:
-        center;
+.brand span{
+    color:var(--red);
 }
-
-
-/* =========================================================
-   WELCOME BOX
-========================================================= */
-
-.welcome-box {
 
-    width:
-        min(750px, 95%);
-
-    padding:
-        35px;
-
-    text-align:
-        center;
+.tagline{
+    color:#bbb;
+    margin-top:8px;
+    font-size:15px;
 }
-
-
-/* =========================================================
-   COMPLETE BOX
-========================================================= */
 
-.complete-box {
-
-    width:
-        min(650px, 95%);
-
-    padding:
-        30px;
-
-    text-align:
-        center;
+.buttons{
+    margin-top:34px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    justify-content:center;
 }
-
-
-/* =========================================================
-   LOGO IMAGE
-========================================================= */
-
-.logo-image {
-
-    position:
-        relative;
-
-    z-index:
-        2;
-
-    width:
-        min(100%, 450px);
-
-    max-height:
-        300px;
-
-    object-fit:
-        contain;
-
-    border-radius:
-        15px;
 
-    margin-bottom:
-        15px;
-
-    background:
-        transparent !important;
-
-    box-shadow:
-        none !important;
+button{
+    border:0;
+    cursor:pointer;
+    color:#fff;
+    font-family:inherit;
 }
-
-
-/* =========================================================
-   HEADINGS
-========================================================= */
-
-h1 {
-
-    position:
-        relative;
-
-    z-index:
-        2;
-
-    font-size:
-        clamp(35px, 6vw, 65px);
 
-    color:
-        #ff4a28;
-
-    letter-spacing:
-        3px;
-
-    text-shadow:
-
-        0 0 5px
-        #ff3212,
-
-        0 0 15px
-        #d51d00,
-
-        0 0 35px
-        rgba(255, 30, 0, 0.55);
-
-    margin-bottom:
-        10px;
+.primary-btn,
+.secondary-btn,
+.mode-btn,
+.device-btn,
+.level-btn{
+    border-radius:14px;
+    transition:.2s ease;
 }
-
-
-h2 {
 
-    position:
-        relative;
-
-    z-index:
-        2;
-
-    font-size:
-        clamp(28px, 5vw, 45px);
-
-    color:
-        #ff7255;
-
-    text-shadow:
-
-        0 0 6px
-        rgba(255, 45, 15, 0.55),
-
-        0 0 20px
-        rgba(180, 0, 0, 0.25);
-
-    margin-bottom:
-        15px;
+.primary-btn{
+    padding:14px 28px;
+    font-weight:800;
+    background:linear-gradient(135deg,#ff1744,#9f001f);
+    box-shadow:0 10px 30px rgba(255,0,50,.22);
 }
-
 
-h3 {
-
-    position:
-        relative;
-
-    z-index:
-        2;
-
-    color:
-        #ffe6df;
-
-    text-shadow:
-        0 0 8px
-        rgba(255, 40, 10, 0.20);
+.secondary-btn{
+    padding:14px 28px;
+    background:rgba(255,255,255,.06);
+    border:1px solid var(--border);
 }
-
-
-/* =========================================================
-   WELCOME TEXT
-========================================================= */
-
-.welcome-box p {
-
-    position:
-        relative;
 
-    z-index:
-        2;
-
-    color:
-        #e6cbc4;
-
-    margin-bottom:
-        25px;
-
-    font-size:
-        18px;
+.primary-btn:hover,
+.secondary-btn:hover,
+.mode-btn:hover,
+.device-btn:hover,
+.level-btn:hover{
+    transform:translateY(-2px);
+    border-color:rgba(255,23,68,.6);
 }
-
-
-/* =========================================================
-   ALL BUTTONS
-========================================================= */
-
-button {
-
-    border:
-        none;
-
-    cursor:
-        pointer;
 
-    font-size:
-        16px;
-
-    font-weight:
-        bold;
-
-    border-radius:
-        12px;
-
-    color:
-        white;
-
-    transition:
-        0.22s ease;
+.panel{
+    width:min(1000px,94vw);
+    padding:35px;
+    border-radius:24px;
 }
 
-
-button:hover {
-
-    transform:
-        translateY(-3px);
-
-    filter:
-        brightness(1.15);
+.panel h1{
+    font-family:"Space Grotesk",Inter,sans-serif;
+    font-size:clamp(30px,5vw,50px);
 }
-
 
-button:active {
-
-    transform:
-        translateY(0)
-        scale(0.98);
+.panel-subtitle{
+    margin-top:8px;
+    color:var(--muted);
 }
-
-
-button:disabled {
-
-    cursor:
-        not-allowed;
 
-    transform:
-        none !important;
-
-    filter:
-        none !important;
+.option-grid{
+    margin-top:30px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
 }
-
-
-/* =========================================================
-   MAIN BUTTON
-========================================================= */
-
-.main-button {
-
-    position:
-        relative;
-
-    z-index:
-        10;
-
-    padding:
-        14px 25px;
-
-    margin:
-        8px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #ff431f,
-            #b00000
-        );
-
-    border:
-        1px solid
-        rgba(255, 120, 90, 0.60);
-
-    box-shadow:
-
-        0 0 10px
-        rgba(255, 45, 15, 0.45),
 
-        0 0 25px
-        rgba(160, 0, 0, 0.25);
+.device-btn,
+.mode-btn{
+    padding:25px;
+    text-align:left;
+    background:rgba(255,255,255,.045);
+    border:1px solid var(--border);
 }
 
-
-.main-button:hover {
-
-    box-shadow:
-
-        0 0 15px
-        rgba(255, 50, 15, 0.75),
-
-        0 0 35px
-        rgba(200, 0, 0, 0.40);
+.option-title{
+    display:block;
+    font-size:21px;
+    font-weight:800;
 }
-
-
-/* =========================================================
-   SMALL BUTTON
-========================================================= */
-
-.small-button {
-
-    position:
-        relative;
 
-    z-index:
-        10;
-
-    padding:
-        11px 18px;
-
-    margin:
-        8px;
-
-    background:
-        rgba(35, 3, 2, 0.72);
-
-    color:
-        #ff9b87;
-
-    border:
-        1px solid
-        rgba(255, 65, 35, 0.35);
-
-    box-shadow:
-        inset 0 0 15px
-        rgba(255, 30, 0, 0.03);
+.option-text{
+    display:block;
+    color:#999;
+    margin-top:6px;
+    font-size:13px;
 }
-
-
-.small-button:hover {
 
-    background:
-        rgba(120, 0, 0, 0.45);
-
-    color:
-        #ffffff;
-
-    border-color:
-        rgba(255, 80, 50, 0.75);
-
-    box-shadow:
-        0 0 15px
-        rgba(255, 30, 0, 0.30);
+.player-card{
+    width:min(620px,94vw);
+    padding:38px;
+    border-radius:24px;
+    text-align:center;
 }
-
-
-/* =========================================================
-   DEVICE / MODE GROUP
-========================================================= */
-
-.button-group,
-.mode-group {
-
-    display:
-        flex;
-
-    justify-content:
-        center;
 
-    gap:
-        15px;
-
-    flex-wrap:
-        wrap;
-
-    margin:
-        25px 0;
+.player-card input{
+    width:100%;
+    margin-top:22px;
+    padding:15px 17px;
+    color:#fff;
+    background:rgba(0,0,0,.42);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:13px;
+    outline:none;
+    font-size:16px;
 }
-
-
-/* =========================================================
-   DEVICE BUTTON
-========================================================= */
-
-.device-button {
-
-    width:
-        180px;
-
-    padding:
-        25px;
-
-    font-size:
-        20px;
 
-    background:
-        linear-gradient(
-            145deg,
-            rgba(55, 5, 3, 0.82),
-            rgba(12, 0, 0, 0.70)
-        );
-
-    border:
-        1px solid
-        rgba(255, 65, 35, 0.40);
-
-    color:
-        #ffe9e3;
-
-    box-shadow:
-        inset 0 0 20px
-        rgba(255, 30, 0, 0.035);
+.player-card input:focus{
+    border-color:var(--red);
 }
-
 
-.device-button:hover {
-
-    border-color:
-        rgba(255, 80, 50, 0.85);
-
-    box-shadow:
-        0 0 20px
-        rgba(255, 35, 10, 0.30);
+.level-panel{
+    width:min(1050px,95vw);
+    padding:35px;
+    border-radius:24px;
 }
-
-
-/* =========================================================
-   MODE BUTTON
-========================================================= */
 
-.mode-button {
-
-    width:
-        190px;
-
-    min-height:
-        135px;
-
-    padding:
-        18px;
-
-    text-align:
-        left;
-
-    color:
-        white;
-
-    border:
-        1px solid
-        rgba(255, 70, 40, 0.30);
+.level-grid{
+    margin-top:28px;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:12px;
 }
-
-
-/* =========================================================
-   MODE TEXT
-========================================================= */
 
-.mode-button b,
-.mode-button span {
-
-    display:
-        block;
+.level-btn{
+    min-height:75px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.10);
+    font-weight:800;
 }
-
 
-.mode-button b {
-
-    color:
-        #ffffff;
+.level-btn.unlocked{
+    background:linear-gradient(135deg,rgba(255,23,68,.30),rgba(120,0,25,.28));
+    border-color:rgba(255,23,68,.42);
 }
-
-
-.mode-button span {
-
-    margin-top:
-        12px;
-
-    font-size:
-        13px;
-
-    font-weight:
-        normal;
 
-    color:
-        rgba(255, 230, 220, 0.78);
+.level-btn.current{
+    box-shadow:0 0 0 2px rgba(255,23,68,.28),0 0 25px rgba(255,23,68,.12);
 }
 
-
-/* =========================================================
-   MODE COLORS
-========================================================= */
-
-.peaceful {
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(110, 25, 15, 0.90),
-            rgba(45, 4, 2, 0.85)
-        );
+.level-btn.locked{
+    opacity:.35;
+    cursor:not-allowed;
 }
-
 
-.easy {
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(160, 30, 10, 0.90),
-            rgba(65, 3, 2, 0.85)
-        );
+.level-actions{
+    margin-top:24px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
 }
-
 
-.hard {
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(100, 0, 0, 0.95),
-            rgba(25, 0, 0, 0.90)
-        );
+.game-content{
+    width:min(1150px,96vw);
+    padding-top:75px;
 }
-
 
-/* =========================================================
-   GAME PAGE
-========================================================= */
-
-#gameScreen {
-
-    align-items:
-        flex-start;
-
-    padding-top:
-        20px;
-
-    padding-bottom:
-        30px;
-
-    overflow:
-        visible;
+.game-header{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:15px;
+    align-items:center;
+    margin-bottom:14px;
 }
-
-
-.game-content {
-
-    position:
-        relative;
 
-    width:
-        min(1100px, 100%);
-
-    margin:
-        0 auto;
-
-    padding-top:
-        95px;
-
-    z-index:
-        10;
+.game-title{
+    font-family:"Space Grotesk",Inter,sans-serif;
+    font-size:clamp(24px,4vw,42px);
+    font-weight:800;
 }
-
-
-/* =========================================================
-   GAME HEADER
-   FIXED LOGO OVERLAP
-========================================================= */
-
-#gameScreen .game-header {
-
-    position:
-        relative;
-
-    z-index:
-        20;
 
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    align-items:
-        center;
-
-    gap:
-        15px;
-
-    flex-wrap:
-        wrap;
-
-    width:
-        100%;
+.game-title span{
+    color:var(--red);
+}
 
-    min-height:
-        70px;
+.game-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:flex-end;
+}
 
-    padding:
-        12px 15px;
+.stat{
+    min-width:82px;
+    padding:10px 12px;
+    border-radius:12px;
+    background:rgba(0,0,0,.44);
+    border:1px solid var(--border);
+    text-align:center;
+}
 
-    margin-bottom:
-        5px;
+.stat small{
+    display:block;
+    color:#888;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
 
-    background:
-        linear-gradient(
-            135deg,
-            rgba(25, 2, 2, 0.72),
-            rgba(5, 0, 0, 0.55)
-        );
+.stat b{
+    display:block;
+    margin-top:3px;
+    font-size:16px;
+}
 
-    border:
-        1px solid
-        rgba(255, 60, 30, 0.18);
+.progress-wrap{
+    height:7px;
+    background:rgba(255,255,255,.07);
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:16px;
+}
 
-    border-radius:
-        15px;
+#progress{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#ff1744,#ff6b88);
+    transition:.3s ease;
+}
 
-    backdrop-filter:
-        blur(6px);
+.game-area{
+    display:grid;
+    grid-template-columns:1fr 1.3fr;
+    gap:18px;
+}
 
-    -webkit-backdrop-filter:
-        blur(6px);
+.game-card{
+    border-radius:22px;
+    padding:25px;
+    background:rgba(7,7,10,.72);
+    border:1px solid var(--border);
+    box-shadow:0 25px 60px rgba(0,0,0,.38);
+    backdrop-filter:blur(15px);
 }
 
+.hangman-card{
+    min-height:470px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
 
-/* =========================================================
-   GAME HEADER LEFT
-========================================================= */
+#hangmanCanvas{
+    display:block;
+    width:min(100%,330px);
+    height:auto;
+    margin:auto;
+}
 
-#gameScreen .game-header > div:first-child {
+.message{
+    min-height:25px;
+    color:#ff5876;
+    font-weight:700;
+    text-align:center;
+}
 
-    min-width:
-        180px;
+.wrong-title{
+    color:#888;
+    text-align:center;
+    margin-top:8px;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
 
-    flex:
-        1;
+#wrongLetters{
+    margin-top:5px;
+    text-align:center;
+    color:#ff405f;
+    letter-spacing:5px;
+    font-weight:800;
 }
 
+.question-card{
+    min-height:470px;
+    display:flex;
+    flex-direction:column;
+}
 
-/* =========================================================
-   MODE NAME
-========================================================= */
+.category{
+    color:#ff5270;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:2px;
+}
 
-#modeName {
+#question{
+    margin-top:12px;
+    font-family:"Space Grotesk",Inter,sans-serif;
+    font-size:clamp(23px,3vw,36px);
+    line-height:1.12;
+}
 
-    color:
-        #ff6848;
+#answerDisplay{
+    margin-top:30px;
+    min-height:62px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-family:"Space Grotesk",Inter,sans-serif;
+    font-size:clamp(22px,3vw,34px);
+    font-weight:800;
+    letter-spacing:7px;
+    color:#fff;
+    word-break:break-word;
+}
 
-    font-size:
-        13px;
+.input-area{
+    margin-top:auto;
+    display:flex;
+    gap:10px;
+}
 
-    font-weight:
-        bold;
+#guessInput{
+    flex:1;
+    min-width:0;
+    padding:15px;
+    border-radius:12px;
+    outline:none;
+    color:#fff;
+    background:rgba(0,0,0,.48);
+    border:1px solid rgba(255,255,255,.12);
+    font-size:16px;
+}
 
-    letter-spacing:
-        2px;
+#guessInput:focus{
+    border-color:var(--red);
+}
 
-    text-shadow:
-        0 0 8px
-        rgba(255, 40, 10, 0.45);
+#guessButton{
+    padding:0 22px;
+    border-radius:12px;
+    background:linear-gradient(135deg,#ff1744,#970020);
+    font-weight:800;
 }
 
+.hint{
+    margin-top:14px;
+    padding:13px;
+    color:#aaa;
+    background:rgba(255,255,255,.035);
+    border-radius:11px;
+    font-size:13px;
+}
 
-/* =========================================================
-   LEVEL TEXT
-========================================================= */
+.game-bottom{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+    justify-content:flex-end;
+}
 
-#levelText {
+.complete-card{
+    width:min(720px,94vw);
+    padding:40px;
+    text-align:center;
+    border-radius:25px;
+}
 
-    color:
-        #ffffff;
+.complete-card img{
+    width:min(260px,60vw);
+    max-height:220px;
+    object-fit:contain;
+}
 
-    margin:
-        3px 0;
+.complete-card h1{
+    font-family:"Space Grotesk",Inter,sans-serif;
+    font-size:clamp(32px,6vw,55px);
+    margin-top:10px;
 }
 
+.complete-card p{
+    color:#aaa;
+    margin-top:8px;
+}
 
-/* =========================================================
-   STATS
-========================================================= */
+.hidden{
+    display:none !important;
+}
 
-.stats {
+.mobile-view .game-area{
+    grid-template-columns:1fr;
+}
 
-    display:
-        flex;
+.mobile-view .game-header{
+    grid-template-columns:1fr;
+}
 
-    gap:
-        10px;
+.mobile-view .game-meta{
+    justify-content:flex-start;
+}
 
-    flex-wrap:
-        wrap;
-
-    align-items:
-        center;
-}
-
-
-.stats span,
-.sound-button {
-
-    padding:
-        10px;
-
-    background:
-        rgba(30, 2, 2, 0.68);
-
-    border:
-        1px solid
-        rgba(255, 60, 30, 0.30);
-
-    border-radius:
-        10px;
-
-    color:
-        #f5dcd5;
-
-    backdrop-filter:
-        blur(4px);
-}
-
-
-.stats b {
-
-    color:
-        #ff7658;
-
-    text-shadow:
-        0 0 7px
-        rgba(255, 40, 10, 0.40);
-}
-
-
-/* =========================================================
-   SOUND BUTTON
-========================================================= */
-
-.sound-button {
-
-    cursor:
-        pointer;
-
-    transition:
-        0.2s ease;
-}
-
-
-.sound-button:hover {
-
-    border-color:
-        rgba(255, 80, 50, 0.80);
-
-    box-shadow:
-        0 0 12px
-        rgba(255, 30, 0, 0.30);
-}
-
-
-/* =========================================================
-   PROGRESS BAR
-========================================================= */
-
-.progress-bar {
-
-    position:
-        relative;
-
-    z-index:
-        15;
-
-    height:
-        12px;
-
-    margin:
-        20px 0;
-
-    background:
-        rgba(20, 0, 0, 0.70);
-
-    border:
-        1px solid
-        rgba(255, 45, 20, 0.20);
-
-    border-radius:
-        20px;
-
-    overflow:
-        hidden;
-}
-
-
-#progress {
-
-    width:
-        0%;
-
-    height:
-        100%;
-
-    background:
-        linear-gradient(
-            90deg,
-            #850000,
-            #ff3214,
-            #ff704c
-        );
-
-    box-shadow:
-        0 0 12px
-        rgba(255, 40, 10, 0.65);
-
-    transition:
-        width 0.4s;
-}
-
-
-/* =========================================================
-   GAME AREA
-========================================================= */
-
-.game-area {
-
-    position:
-        relative;
-
-    z-index:
-        10;
-
-    display:
-        grid;
-
-    grid-template-columns:
-        1fr 1.3fr;
-
-    gap:
-        20px;
-
-    width:
-        100%;
-}
-
-
-/* =========================================================
-   GAME CARD
-========================================================= */
-
-.game-card {
-
-    padding:
-        25px;
-
-    min-width:
-        0;
-
-    overflow:
-        hidden;
-}
-
-
-/* =========================================================
-   HANGMAN CARD
-========================================================= */
-
-.hangman-card {
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    justify-content:
-        center;
-
-    align-items:
-        center;
-
-    min-height:
-        390px;
-}
-
-
-/* =========================================================
-   QUESTION CARD
-========================================================= */
-
-.question-card {
-
-    min-height:
-        390px;
-}
-
-
-/* =========================================================
-   HANGMAN CANVAS
-========================================================= */
-
-#hangmanCanvas {
-
-    display:
-        block;
-
-    width:
-        min(100%, 260px);
-
-    height:
-        auto;
-
-    margin:
-        auto;
-
-    background:
-        rgba(3, 0, 0, 0.65);
-
-    border:
-        1px solid
-        rgba(255, 50, 25, 0.25);
-
-    border-radius:
-        15px;
-
-    box-shadow:
-
-        inset 0 0 25px
-        rgba(255, 20, 0, 0.06),
-
-        0 0 15px
-        rgba(100, 0, 0, 0.12);
-}
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-.message {
-
-    min-height:
-        40px;
-
-    margin-top:
-        15px;
-
-    text-align:
-        center;
-
-    color:
-        #ffb39f;
-
-    font-weight:
-        bold;
-}
-
-
-/* =========================================================
-   WRONG TEXT
-========================================================= */
-
-.wrong-text {
-
-    text-align:
-        center;
-
-    color:
-        #dcbeb7;
-
-    margin-top:
-        10px;
-}
-
-
-#wrongLetters {
-
-    color:
-        #ff6342;
-
-    text-shadow:
-        0 0 6px
-        rgba(255, 40, 10, 0.40);
-}
-
-
-/* =========================================================
-   CATEGORY
-========================================================= */
-
-.category {
-
-    display:
-        inline-block;
-
-    padding:
-        7px 12px;
-
-    border-radius:
-        20px;
-
-    background:
-        rgba(125, 0, 0, 0.50);
-
-    color:
-        #ffab98;
-
-    border:
-        1px solid
-        rgba(255, 65, 35, 0.35);
-
-    font-size:
-        13px;
-
-    font-weight:
-        bold;
-
-    box-shadow:
-        0 0 10px
-        rgba(255, 30, 0, 0.12);
-}
-
-
-/* =========================================================
-   QUESTION
-========================================================= */
-
-.question-card h3 {
-
-    margin:
-        20px 0;
-
-    font-size:
-        clamp(20px, 3vw, 28px);
-
-    line-height:
-        1.4;
-}
-
-
-/* =========================================================
-   QUESTION NUMBER
-========================================================= */
-
-#questionNumber {
-
-    color:
-        #ff805f;
-
-    font-weight:
-        bold;
-}
-
-
-/* =========================================================
-   ANSWER
-========================================================= */
-
-.answer-display {
-
-    min-height:
-        55px;
-
-    margin:
-        25px 0;
-
-    color:
-        #ff633f;
-
-    font-size:
-        clamp(22px, 4vw, 34px);
-
-    font-weight:
-        bold;
-
-    text-align:
-        center;
-
-    letter-spacing:
-        7px;
-
-    word-break:
-        break-word;
-
-    text-shadow:
-
-        0 0 5px
-        #ff3b18,
-
-        0 0 15px
-        rgba(200, 0, 0, 0.55);
-}
-
-
-/* =========================================================
-   LABEL
-========================================================= */
-
-label {
-
-    color:
-        #e8cbc4;
-}
-
-
-/* =========================================================
-   INPUT AREA
-========================================================= */
-
-.input-area {
-
-    display:
-        flex;
-
-    gap:
-        10px;
-
-    margin-top:
-        8px;
-}
-
-
-/* =========================================================
-   GUESS INPUT
-========================================================= */
-
-#guessInput {
-
-    flex:
-        1;
-
-    min-width:
-        0;
-
-    padding:
-        14px;
-
-    border:
-        2px solid
-        rgba(255, 65, 35, 0.35);
-
-    border-radius:
-        12px;
-
-    outline:
-        none;
-
-    background:
-        rgba(5, 0, 0, 0.78);
-
-    color:
-        white;
-
-    font-size:
-        17px;
-
-    text-transform:
-        uppercase;
-}
-
-
-#guessInput::placeholder {
-
-    color:
-        rgba(255, 210, 200, 0.45);
-}
-
-
-#guessInput:focus {
-
-    border-color:
-        #ff4b2c;
-
-    box-shadow:
-
-        0 0 10px
-        rgba(255, 45, 15, 0.45),
-
-        inset 0 0 12px
-        rgba(255, 30, 0, 0.06);
-}
-
-
-/* =========================================================
-   GUESS BUTTON
-========================================================= */
-
-#guessButton {
-
-    white-space:
-        nowrap;
-
-    padding:
-        14px 20px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #ff431f,
-            #a50000
-        );
-
-    color:
-        #ffffff;
-
-    border:
-        1px solid
-        rgba(255, 120, 90, 0.55);
-
-    box-shadow:
-        0 0 12px
-        rgba(255, 45, 15, 0.30);
-}
-
-
-#guessButton:hover {
-
-    box-shadow:
-        0 0 20px
-        rgba(255, 45, 15, 0.60);
-}
-
-
-/* =========================================================
-   HINT
-========================================================= */
-
-.hint {
-
-    min-height:
-        20px;
-
-    margin-top:
-        15px;
-
-    color:
-        #ffad62;
-
-    text-shadow:
-        0 0 6px
-        rgba(255, 100, 20, 0.25);
-}
-
-
-/* =========================================================
-   COMPLETE PAGE
-========================================================= */
-
-.complete-image {
-
-    width:
-        min(100%, 300px);
-
-    border-radius:
-        15px;
-
-    margin-bottom:
-        15px;
-
-    border:
-        1px solid
-        rgba(255, 55, 30, 0.35);
-
-    box-shadow:
-        0 0 20px
-        rgba(180, 0, 0, 0.20);
-}
-
-
-/* =========================================================
-   INSTRUCTIONS
-========================================================= */
-
-.instructions {
-
-    text-align:
-        left;
-}
-
-
-.instructions h2 {
-
-    text-align:
-        center;
-}
-
-
-.instructions p {
-
-    margin:
-        12px 0;
-
-    color:
-        #e1c9c3;
-
-    line-height:
-        1.6;
-}
-
-
-/* =========================================================
-   LEVEL PROGRESS
-========================================================= */
-
-#levelProgressScreen {
-
-    padding:
-        25px 0;
-}
-
-
-.level-progress-box {
-
-    position:
-        relative;
-
-    width:
-        min(900px, 96%);
-
-    max-height:
-        90vh;
-
-    overflow-y:
-        auto;
-
-    padding:
-        30px;
-
-    text-align:
-        center;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(28, 3, 2, 0.82),
-            rgba(3, 0, 0, 0.72)
-        );
-
-    border:
-        1px solid
-        rgba(255, 55, 25, 0.45);
-
-    border-radius:
-        20px;
-
-    box-shadow:
-
-        0 0 20px
-        rgba(255, 35, 10, 0.15),
-
-        0 0 40px
-        rgba(150, 0, 0, 0.15);
-
-    backdrop-filter:
-        blur(7px);
-
-    -webkit-backdrop-filter:
-        blur(7px);
-}
-
-
-.level-complete-image {
-
-    width:
-        min(100%, 430px);
-
-    max-height:
-        210px;
-
-    object-fit:
-        contain;
-
-    border-radius:
-        15px;
-
-    margin-bottom:
-        15px;
-}
-
-
-.level-cards {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        repeat(5, 1fr);
-
-    gap:
-        12px;
-
-    margin:
-        25px 0;
-}
-
-
-.level-card {
-
-    min-height:
-        65px;
-
-    padding:
-        12px 5px;
-
-    border-radius:
-        12px;
-
-    font-weight:
-        bold;
-
-    font-size:
-        16px;
-
-    color:
-        white;
-
-    background:
-        rgba(35, 5, 5, 0.85);
-
-    border:
-        2px solid
-        #632015;
-
-    transition:
-        0.22s ease;
-}
-
-
-.level-card:not(:disabled):hover {
-
-    transform:
-        translateY(-4px)
-        scale(1.02);
-
-    border-color:
-        #ff4d2e;
-
-    box-shadow:
-        0 0 18px
-        rgba(255, 65, 35, 0.55);
-}
-
-
-.level-card:disabled {
-
-    opacity:
-        0.55;
-}
-
-
-/* =========================================================
-   SIDE LOGO
-   FIXED POSITION
-========================================================= */
-
-.side-game-logo {
-
-    position:
-        absolute;
-
-    top:
-        15px;
-
-    left:
-        15px;
-
-    width:
-        130px;
-
-    max-width:
-        18vw;
-
-    height:
-        auto;
-
-    z-index:
-        50;
-
-    background:
-        transparent !important;
-
-    border:
-        none !important;
-
-    border-radius:
-        0 !important;
-
-    box-shadow:
-        none !important;
-
-    opacity:
-        0.95;
-
-    mix-blend-mode:
-        screen;
-
-    filter:
-        contrast(1.25)
-        brightness(1.18)
-        saturate(1.25);
-
-    animation:
-        sideLogoFloat
-        3s
-        infinite
-        ease-in-out;
-}
-
-
-@keyframes sideLogoFloat {
-
-    0% {
-
-        transform:
-            translateY(0)
-            scale(1);
-
-    }
-
-    50% {
-
-        transform:
-            translateY(-7px)
-            scale(1.035);
-
-    }
-
-    100% {
-
-        transform:
-            translateY(0)
-            scale(1);
-
-    }
-
-}
-
-
-/* =========================================================
-   GAME SCREEN LOGO
-   KEEPS LOGO AWAY FROM HEADER
-========================================================= */
-
-#gameScreen .side-game-logo {
-
-    top:
-        15px;
-
-    left:
-        15px;
-
-    width:
-        115px;
-
-    max-width:
-        15vw;
-
-    z-index:
-        60;
-}
-
-
-/* =========================================================
-   POPPING LOGO
-========================================================= */
-
-.startup-moving-logo {
-
-    position:
-        fixed !important;
-
-    z-index:
-        1000000 !important;
-
-    margin:
-        0 !important;
-
-    padding:
-        0 !important;
-
-    display:
-        block !important;
-
-    object-fit:
-        contain !important;
-
-    background:
-        transparent !important;
-
-    border:
-        none !important;
-
-    border-radius:
-        0 !important;
-
-    box-shadow:
-        none !important;
-
-    pointer-events:
-        none !important;
-
-    user-select:
-        none !important;
-
-    -webkit-user-drag:
-        none !important;
-
-    transform-origin:
-        center center;
-
-    will-change:
-        left,
-        top,
-        width,
-        height,
-        transform;
-
-    filter:
-
-        contrast(1.35)
-        brightness(1.22)
-        saturate(1.35)
-
-        drop-shadow(
-            0 0 12px
-            rgba(255, 35, 0, 0.50)
-        )
-
-        drop-shadow(
-            0 0 30px
-            rgba(170, 0, 0, 0.30)
-        );
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 700px) {
-
-    body {
-
-        background:
-            #030000;
-    }
-
-
-    .container {
-
-        padding:
-            12px;
-    }
-
-
-    .screen {
-
-        min-height:
-            94vh;
-    }
-
-
-    /* -------------------------
-       GAME SCREEN
-    ------------------------- */
-
-    #gameScreen {
-
-        align-items:
-            flex-start;
-
-        padding-top:
-            5px;
-    }
-
-
-    .game-content {
-
-        padding-top:
-            75px;
-    }
-
-
-    #gameScreen .side-game-logo {
-
-        width:
-            80px;
-
-        max-width:
-            none;
-
-        top:
-            7px;
-
-        left:
-            7px;
-    }
-
-
-    #gameScreen .game-header {
-
-        min-height:
-            60px;
-
-        padding:
-            10px;
-
-        gap:
-            10px;
-    }
-
-
-    .game-header {
-
-        flex-direction:
-            column;
-
-        align-items:
-            flex-start;
-    }
-
-
-    .stats {
-
-        width:
-            100%;
-
-        gap:
-            6px;
-    }
-
-
-    .stats span,
-    .sound-button {
-
-        padding:
-            8px;
-
-        font-size:
-            13px;
-    }
-
-
-    .game-area {
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-
-    .hangman-card,
-    .question-card {
-
-        min-height:
-            auto;
-    }
-
-
-    .input-area {
-
-        flex-direction:
-            column;
-    }
-
-
-    .input-area button {
-
-        width:
-            100%;
-    }
-
-
-    .answer-display {
-
-        letter-spacing:
-            4px;
-
-        font-size:
-            23px;
-
-        line-height:
-            1.6;
-    }
-
-
-    .box,
-    .welcome-box,
-    .complete-box,
-    .game-card {
-
-        padding:
-            20px;
-
-        border-radius:
-            17px;
-
-        backdrop-filter:
-            blur(4px);
-
-        -webkit-backdrop-filter:
-            blur(4px);
-    }
-
-
-    .logo-image {
-
-        max-height:
-            230px;
-    }
-
-
-    .side-game-logo {
-
-        width:
-            85px;
-
-        top:
-            8px;
-
-        left:
-            8px;
-    }
-
-
-    .device-button {
-
-        width:
-            150px;
-    }
-
-
-    .mode-button {
-
-        width:
-            100%;
-
-        max-width:
-            330px;
-    }
-
-
-    /* -------------------------
-       LEVEL SCREEN
-    ------------------------- */
-
-    .level-progress-box {
-
-        width:
-            96%;
-
-        max-height:
-            91vh;
-
-        padding:
-            20px 12px;
-    }
-
-
-    .level-cards {
-
-        grid-template-columns:
-            repeat(3, 1fr);
-
-        gap:
-            8px;
-    }
-
-
-    .level-card {
-
-        min-height:
-            55px;
-
-        font-size:
-            13px;
-
-        padding:
-            9px 3px;
-    }
-
-
-    .level-complete-image {
-
-        max-height:
-            170px;
-    }
-
-}
-
-
-/* =========================================================
-   VERY SMALL MOBILE
-========================================================= */
-
-@media (max-width: 420px) {
-
-    .container {
-
-        padding:
-            8px;
-    }
-
-
-    h1 {
-
-        letter-spacing:
-            1px;
-    }
-
-
-    .stats span,
-    .sound-button {
-
-        padding:
-            7px;
-
-        font-size:
-            12px;
-    }
-
-
-    .game-card {
-
-        padding:
-            15px;
-    }
-
-
-    .game-content {
-
-        padding-top:
-            70px;
-    }
-
-
-    #gameScreen .side-game-logo {
-
-        width:
-            72px;
-    }
-
-
-    .level-cards {
-
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
-
-}
-
-
-/* =========================================================
-   TABLET
-========================================================= */
-
-@media (min-width: 701px) and (max-width: 950px) {
-
-    .game-content {
-
-        width:
-            96%;
-
-        padding-top:
-            90px;
-    }
-
-
-    .game-area {
-
-        grid-template-columns:
-            1fr 1fr;
-    }
-
-
-    #gameScreen .side-game-logo {
-
-        width:
-            105px;
-    }
-
-}
-
-
-/* =========================================================
-   LARGE SCREEN
-========================================================= */
-
-@media (min-width: 1200px) {
-
-    .game-content {
-
-        width:
-            min(1150px, 94%);
-    }
-
-
-    #gameScreen .side-game-logo {
-
-        width:
-            120px;
-    }
-
-}
-
-
-/* =========================================================
-   SCROLLBAR
-========================================================= */
-
-.level-progress-box::-webkit-scrollbar {
-
-    width:
-        7px;
-}
-
-
-.level-progress-box::-webkit-scrollbar-track {
-
-    background:
-        rgba(20, 0, 0, 0.6);
-
-    border-radius:
-        10px;
-}
-
-
-.level-progress-box::-webkit-scrollbar-thumb {
-
-    background:
-        #8f170c;
-
-    border-radius:
-        10px;
-}
-
-
-.level-progress-box::-webkit-scrollbar-thumb:hover {
-
-    background:
-        #ff4325;
+@media(max-width:800px){
+    .container{padding:15px}
+    .screen{min-height:calc(100vh - 30px)}
+    .side-game-logo{width:65px;height:65px;top:10px;left:10px}
+    .welcome-card{padding:45px 20px}
+    .option-grid{grid-template-columns:1fr}
+    .game-area{grid-template-columns:1fr}
+    .hangman-card,.question-card{min-height:auto}
+    .level-grid{grid-template-columns:repeat(4,1fr)}
+    .game-content{padding-top:70px}
 }
-
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    .screen {
-
-        animation:
-            none;
-    }
-
-
-    .side-game-logo {
-
-        animation:
-            none;
-    }
-
-
-    button {
-
-        transition:
-            none;
-    }
 
+@media(max-width:520px){
+    .level-grid{grid-template-columns:repeat(3,1fr)}
+    .game-card{padding:18px}
+    .input-area{flex-direction:column}
+    #guessButton{height:48px}
+    #answerDisplay{letter-spacing:3px}
+    .game-meta{justify-content:flex-start}
 }
