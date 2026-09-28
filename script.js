@@ -8,11 +8,11 @@ let soundOn = true;
 let currentState = null;
 let messageTimer = null;
 
-const correctSound = new Audio("/assets/answer-correct.mp3");
-const wrongSound = new Audio("/assets/answer-wrong.mp3");
-const gameOverSound = new Audio("/assets/faaah.mp3");
+const correctSound = new Audio("./assets/answer-correct.mp3");
+const wrongSound = new Audio("./assets/answer-wrong.mp3");
+const gameOverSound = new Audio("./assets/faaah.mp3");
 const backgroundSound = new Audio(
-    "/assets/simplesound-horror-trailer-443327.mp3"
+    "./assets/simplesound-horror-trailer-443327.mp3"
 );
 
 backgroundSound.loop = true;
